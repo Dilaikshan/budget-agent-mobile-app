@@ -2,7 +2,7 @@
 
 ## Status
 
-todo — specification ready; implementation not started.
+partial — unit/property/widget suites pass; export/restore NOT implemented (Settings shows 'Not available yet'); device accessibility/performance checks pending.
 
 ## Goal
 

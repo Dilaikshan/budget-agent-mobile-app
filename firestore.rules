@@ -1,0 +1,11 @@
+rules_version = '2';
+// All client SDK reads and writes are denied (docs/07-SECURITY.md). The mobile
+// app replicates only through the authenticated Vercel sync API; the Admin SDK
+// used by the backend bypasses these rules and enforces authorization itself.
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

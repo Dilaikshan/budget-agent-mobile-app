@@ -1,0 +1,65 @@
+{
+  "indexes": [
+    {
+      "collectionGroup": "review_states",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "state", "order": "ASCENDING" },
+        { "fieldPath": "id", "order": "ASCENDING" }
+      ]
+    },
+    {
+      "collectionGroup": "transactions",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "merchant", "order": "ASCENDING" },
+        { "fieldPath": "deletedAt", "order": "ASCENDING" },
+        { "fieldPath": "effectiveDate", "order": "DESCENDING" }
+      ]
+    },
+    {
+      "collectionGroup": "transactions",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "effectiveDate", "order": "ASCENDING" },
+        { "fieldPath": "id", "order": "ASCENDING" }
+      ]
+    },
+    {
+      "collectionGroup": "categorization_rules",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "enabled", "order": "ASCENDING" },
+        { "fieldPath": "priority", "order": "DESCENDING" }
+      ]
+    },
+    {
+      "collectionGroup": "ai_insights",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "businessDate", "order": "DESCENDING" },
+        { "fieldPath": "id", "order": "DESCENDING" }
+      ]
+    },
+    {
+      "collectionGroup": "ai_proposals",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "status", "order": "ASCENDING" },
+        { "fieldPath": "expiresAt", "order": "ASCENDING" }
+      ]
+    }
+  ],
+  "fieldOverrides": [
+    { "collectionGroup": "changes", "fieldPath": "mutations", "indexes": [] },
+    { "collectionGroup": "ai_requests", "fieldPath": "responseJson", "indexes": [] },
+    { "collectionGroup": "agent_runs", "fieldPath": "providerAttempts", "indexes": [] },
+    { "collectionGroup": "agent_runs", "fieldPath": "errors", "indexes": [] },
+    { "collectionGroup": "ai_proposals", "fieldPath": "candidateJson", "indexes": [] },
+    { "collectionGroup": "ai_proposals", "fieldPath": "fieldConfidence", "indexes": [] },
+    { "collectionGroup": "ai_insights", "fieldPath": "facts", "indexes": [] },
+    { "collectionGroup": "ai_insights", "fieldPath": "summary", "indexes": [] },
+    { "collectionGroup": "ai_activity", "fieldPath": "summary", "indexes": [] },
+    { "collectionGroup": "transactions", "fieldPath": "description", "indexes": [] }
+  ]
+}

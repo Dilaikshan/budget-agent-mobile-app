@@ -2,7 +2,7 @@
 
 ## Status
 
-todo — specification ready; implementation not started.
+implemented — accounts with atomic signed openings, archive, opening correction; widget tests pass.
 
 ## Goal
 

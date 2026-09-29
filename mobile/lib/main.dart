@@ -1,94 +1,163 @@
+import 'dart:async';
+import 'dart:ui';
+
+import 'package:connectivity_plus/connectivity_plus.dart';
+import 'package:firebase_app_check/firebase_app_check.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
-import 'core/theme/app_theme.dart';
+
+import 'app/providers.dart';
+import 'app/router.dart';
+import 'app/theme.dart';
 import 'core/config/app_config.dart';
-import 'core/database/app_database.dart';
-import 'core/network/api_client.dart';
-import 'features/dashboard/presentation/dashboard_screen.dart';
-import 'features/transactions/presentation/ledger_screen.dart';
-import 'features/accounts/presentation/accounts_screen.dart';
-import 'features/budgets/presentation/budgets_screen.dart';
-import 'features/settings/presentation/settings_screen.dart';
-import 'features/transactions/presentation/transaction_entry_sheet.dart';
+import 'core/domain/time.dart';
 
-// Riverpod Global Providers
-final appConfigProvider = Provider<AppConfig>((ref) => AppConfig.fromEnvironment());
-final appDatabaseProvider = Provider<AppDatabase>((ref) => AppDatabase());
-final apiClientProvider = Provider<ApiClient>((ref) {
-  final config = ref.watch(appConfigProvider);
-  return ApiClient(config: config);
-});
-
-// App Router
-final routerProvider = Provider<GoRouter>((ref) {
-  return GoRouter(
-    initialLocation: '/',
-    routes: [
-      StatefulShellRoute.indexedStack(
-        builder: (context, state, navigationShell) {
-          return Scaffold(
-            body: navigationShell,
-            bottomNavigationBar: NavigationBar(
-              selectedIndex: navigationShell.currentIndex,
-              onDestinationSelected: (index) => navigationShell.goBranch(index),
-              destinations: const [
-                NavigationDestination(icon: Icon(Icons.dashboard_outlined), selectedIcon: Icon(Icons.dashboard), label: 'Dashboard'),
-                NavigationDestination(icon: Icon(Icons.receipt_long_outlined), selectedIcon: Icon(Icons.receipt_long), label: 'Ledger'),
-                NavigationDestination(icon: Icon(Icons.account_balance_wallet_outlined), selectedIcon: Icon(Icons.account_balance_wallet), label: 'Accounts'),
-                NavigationDestination(icon: Icon(Icons.pie_chart_outline), selectedIcon: Icon(Icons.pie_chart), label: 'Budgets'),
-                NavigationDestination(icon: Icon(Icons.settings_outlined), selectedIcon: Icon(Icons.settings), label: 'Settings'),
-              ],
-            ),
-            floatingActionButton: FloatingActionButton.extended(
-              onPressed: () {
-                showModalBottomSheet(
-                  context: context,
-                  isScrollControlled: true,
-                  backgroundColor: Colors.transparent,
-                  builder: (_) => const TransactionEntrySheet(),
-                );
-              },
-              backgroundColor: AppTheme.primaryEmerald,
-              icon: const Icon(Icons.auto_awesome, color: Colors.black),
-              label: const Text(
-                'AI Entry',
-                style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
-              ),
-            ),
-          );
-        },
-        branches: [
-          StatefulShellBranch(routes: [GoRoute(path: '/', builder: (_, __) => const DashboardScreen())]),
-          StatefulShellBranch(routes: [GoRoute(path: '/ledger', builder: (_, __) => const LedgerScreen())]),
-          StatefulShellBranch(routes: [GoRoute(path: '/accounts', builder: (_, __) => const AccountsScreen())]),
-          StatefulShellBranch(routes: [GoRoute(path: '/budgets', builder: (_, __) => const BudgetsScreen())]),
-          StatefulShellBranch(routes: [GoRoute(path: '/settings', builder: (_, __) => const SettingsScreen())]),
-        ],
-      ),
-    ],
-  );
-});
-
-void main() async {
+Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  runApp(const ProviderScope(child: BudgetAgentApp()));
+  final loaded = AppConfig.load();
+  if (loaded.config == null) {
+    runApp(_ConfigErrorApp(loaded.problems));
+    return;
+  }
+  final config = loaded.config!;
+
+  // Public Firebase client config comes from build defines; it is not a secret.
+  await Firebase.initializeApp(
+    options: FirebaseOptions(
+      apiKey: config.firebaseApiKey,
+      appId: config.firebaseAppId,
+      messagingSenderId: config.firebaseMessagingSenderId,
+      projectId: config.firebaseProjectId,
+    ),
+  );
+  await FirebaseAppCheck.instance.activate(
+    providerAndroid: config.appCheckDebug
+        ? const AndroidDebugProvider()
+        : const AndroidPlayIntegrityProvider(),
+    providerApple: config.appCheckDebug
+        ? const AppleDebugProvider()
+        : const AppleAppAttestWithDeviceCheckFallbackProvider(),
+  );
+
+  // Crash reports carry stack traces and error types only; app code never
+  // puts financial content, tokens or prompts into exceptions.
+  await FirebaseCrashlytics.instance.setCrashlyticsCollectionEnabled(
+    config.env == AppEnv.production,
+  );
+  FlutterError.onError = FirebaseCrashlytics.instance.recordFlutterFatalError;
+  PlatformDispatcher.instance.onError = (error, stack) {
+    FirebaseCrashlytics.instance.recordError(
+      error.runtimeType,
+      stack,
+      fatal: true,
+    );
+    return true;
+  };
+
+  ensureTimeZones();
+  runApp(
+    ProviderScope(
+      overrides: [appConfigProvider.overrideWithValue(config)],
+      child: const BudgetAgentApp(),
+    ),
+  );
 }
 
-class BudgetAgentApp extends ConsumerWidget {
+class BudgetAgentApp extends ConsumerStatefulWidget {
   const BudgetAgentApp({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final router = ref.watch(routerProvider);
+  ConsumerState<BudgetAgentApp> createState() => _BudgetAgentAppState();
+}
 
+class _BudgetAgentAppState extends ConsumerState<BudgetAgentApp>
+    with WidgetsBindingObserver {
+  StreamSubscription<List<ConnectivityResult>>? _connectivity;
+  Timer? _foregroundTimer;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addObserver(this);
+    // Connectivity events are hints only; the sync cycle checks real HTTP results.
+    _connectivity = Connectivity().onConnectivityChanged.listen((r) {
+      if (!r.contains(ConnectivityResult.none)) {
+        ref.read(syncControllerProvider.notifier).schedule();
+      }
+    });
+    _foregroundTimer = Timer.periodic(
+      const Duration(minutes: 5),
+      (_) => ref.read(syncControllerProvider.notifier).schedule(Duration.zero),
+    );
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    _connectivity?.cancel();
+    _foregroundTimer?.cancel();
+    super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) {
+      ref.read(syncControllerProvider.notifier).schedule(Duration.zero);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    // Launch sync and draft cleanup once a verified user's database is open.
+    ref.listen(localStoreProvider, (_, store) {
+      if (store == null) return;
+      store.purgeExpiredDrafts();
+      ref.read(syncControllerProvider.notifier).schedule(Duration.zero);
+    });
+    final theme = ref.watch(currentUidProvider) == null
+        ? null
+        : ref.watch(settingsProvider).value?.theme;
+    final env = ref.watch(appConfigProvider).env;
     return MaterialApp.router(
       title: 'Budget Agent',
       debugShowCheckedModeBanner: false,
-      theme: AppTheme.lightTheme,
-      darkTheme: AppTheme.darkTheme,
-      themeMode: ThemeMode.dark,
-      routerConfig: router,
+      theme: AppTheme.light(),
+      darkTheme: AppTheme.dark(),
+      themeMode: AppTheme.modeOf(theme),
+      routerConfig: ref.watch(routerProvider),
+      builder: (context, child) => env == AppEnv.production
+          ? child!
+          : Banner(
+              message: env.name.toUpperCase(),
+              location: BannerLocation.topEnd,
+              child: child!,
+            ),
     );
   }
+}
+
+class _ConfigErrorApp extends StatelessWidget {
+  const _ConfigErrorApp(this.problems);
+
+  final List<String> problems;
+
+  @override
+  Widget build(BuildContext context) => MaterialApp(
+    home: Scaffold(
+      appBar: AppBar(title: const Text('Configuration error')),
+      body: ListView(
+        padding: const EdgeInsets.all(16),
+        children: [
+          const Text(
+            'This build is missing required settings. Rebuild with --dart-define-from-file=env/<environment>.json.',
+          ),
+          const SizedBox(height: 12),
+          for (final p in problems)
+            ListTile(leading: const Icon(Icons.error_outline), title: Text(p)),
+        ],
+      ),
+    ),
+  );
 }

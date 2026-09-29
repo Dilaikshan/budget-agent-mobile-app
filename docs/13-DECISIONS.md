@@ -66,6 +66,19 @@ The initial project contained only `budget_ai_agent_architecture_document.docx` 
 
 **Context:** long-offline devices require tombstones/receipts, and Spark lacks a free managed recovery path. **Decision:** retain immutable financial change history and receipts in MVP; provide explicit local export/restore. **Consequences:** storage grows and active AI-record retention is not complete erasure from historical Changes. Do not claim automatic encrypted backups or full cloud disaster recovery. Future compaction needs snapshots, sync epochs and an erasure policy.
 
+## ADR-16 — Implementation refinements (2026-09-29)
+
+**Context:** first implementation pass against this specification. **Decisions:**
+- Firestore stores instants as RFC3339 millisecond UTC strings (lexicographically ordered) instead of Timestamp, so canonical records, Changes and receipts replay byte-identically; Drift still stores epoch milliseconds.
+- Mobile environments use `--dart-define-from-file=mobile/env/<env>.json` (APP_ENV, API_BASE_URL, public Firebase options, Google web client ID) instead of Gradle flavors; Firebase is initialised from these options, so no google-services.json is required.
+- Backend pins firebase-admin 13.10.0: 14.x pulls jwks-rsa 4 → ESM-only jose, which Vercel's Node function loader cannot `require()` (verified ERR_REQUIRE_ESM in production logs). Revisit when jwks-rsa or the runtime changes.
+- App Check has no bypass in any environment; development uses the App Check debug provider with a registered debug token. ALLOWED_APP_IDS lists accepted Firebase app IDs.
+- OpenRouter fallback is enabled only when FALLBACK_ENABLED, keys, model and a non-empty OPENROUTER_ALLOWED_PROVIDERS allowlist are all present (requests set `only`, `allow_fallbacks:false`, `data_collection:deny`).
+- Account/category/income-source type, currency and parent are immutable after creation (stricter than "once referenced"; avoids a reference query in every commit).
+- Server-side accumulated-balance overflow checks are not performed per commit; the client and all reducers use checked sums. Revisit before multi-user scale.
+- The root-level Vite/Express web app (server.ts, src/, index.html, metadata.json, root package.json) is outside the specification (no web client in MVP). It is not deployed; the Vercel project root is `backend/`. Removal is an owner decision.
+- Export/restore (task 017) is not yet implemented and is shown as unavailable in Settings.
+
 ## Conflict resolution register
 
 | Legacy location | Conflict | Resolution / owning specification |

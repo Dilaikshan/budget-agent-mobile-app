@@ -2,7 +2,7 @@
 
 ## Status
 
-todo — specification ready; implementation not started.
+implemented — two-level categories, default tree on acceptance, income sources, rules management.
 
 ## Goal
 

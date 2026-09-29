@@ -2,7 +2,7 @@
 
 ## Status
 
-todo — specification ready; implementation not started.
+implemented — rules-first parse, 52 deterministic goldens, alias/redaction, idempotent replay cache, proposals/run/activity persisted atomically. Live model accuracy gate (>=90%) not yet measured.
 
 ## Goal
 

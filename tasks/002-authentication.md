@@ -2,7 +2,7 @@
 
 ## Status
 
-todo — specification ready; implementation not started.
+implemented — Google + email/password, verification, reset, route guards; automated guard tests pass. Manual device sign-in pending (needs Firebase project).
 
 ## Goal
 

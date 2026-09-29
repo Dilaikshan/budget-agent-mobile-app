@@ -1,78 +1,61 @@
 import 'package:drift/drift.dart';
 import 'package:drift_flutter/drift_flutter.dart';
+
+import '../domain/canonical_json.dart';
 import 'tables.dart';
 
 part 'app_database.g.dart';
 
-@DriftDatabase(tables: [
-  UserProfiles,
-  Accounts,
-  IncomeSources,
-  Categories,
-  Transactions,
-  CategorizationRules,
-  Budgets,
-  OutboxOperations,
-  SyncCursors,
-])
+/// Per-UID SQLite database (docs/07 "Local protection"). Screens read only
+/// through repositories; migrations are numbered and never recreate data.
+@DriftDatabase(
+  tables: [
+    Profiles,
+    SettingsRecords,
+    Accounts,
+    IncomeSources,
+    Categories,
+    Transactions,
+    CategorizationRules,
+    Budgets,
+    AiInsights,
+    AiProposals,
+    ReviewStates,
+    AiActivities,
+    AgentRuns,
+    OutboxOps,
+    RemoteShadows,
+    SyncCursors,
+    SyncConflicts,
+    Drafts,
+  ],
+)
 class AppDatabase extends _$AppDatabase {
-  AppDatabase([QueryExecutor? e]) : super(e ?? _openConnection());
+  AppDatabase(super.e);
+
+  /// Opens the file-backed database for one Firebase UID in app-private storage.
+  factory AppDatabase.forUser(String uid) => AppDatabase(
+    driftDatabase(name: 'budget_agent_${sha256Hex(uid).substring(0, 16)}'),
+  );
 
   @override
   int get schemaVersion => 1;
 
-  static QueryExecutor _openConnection() {
-    return driftDatabase(
-      name: 'budget_agent_db',
-      native: const DriftNativeOptions(
-        shareAcrossIsolates: true,
-      ),
-    );
-  }
-
-  // Reactive Watchers
-  Stream<List<Account>> watchAllAccounts() =>
-      (select(accounts)..where((a) => a.archived.equals(false))).watch();
-
-  Stream<List<Transaction>> watchAllTransactions() =>
-      (select(transactions)..orderBy([(t) => OrderingTerm.desc(t.occurredAt)])).watch();
-
-  Stream<List<Category>> watchCategories() =>
-      (select(categories)..where((c) => c.archived.equals(false))).watch();
-
-  Stream<List<IncomeSource>> watchIncomeSources() =>
-      (select(incomeSources)..where((s) => s.archived.equals(false))).watch();
-
-  Stream<List<Budget>> watchBudgetsForMonth(String month) =>
-      (select(budgets)..where((b) => b.month.equals(month))).watch();
-
-  Stream<List<CategorizationRule>> watchActiveRules() =>
-      (select(categorizationRules)
-            ..where((r) => r.enabled.equals(true))
-            ..orderBy([(r) => OrderingTerm.desc(r.priority)]))
-          .watch();
-
-  // Atomic Account Creation with Opening Balance
-  Future<void> createAccountWithOpening({
-    required AccountsCompanion accountCompanion,
-    required TransactionsCompanion openingTxCompanion,
-    required OutboxOperationsCompanion outboxCompanion,
-  }) {
-    return transaction(() async {
-      await into(accounts).insert(accountCompanion);
-      await into(transactions).insert(openingTxCompanion);
-      await into(outboxOperations).insert(outboxCompanion);
-    });
-  }
-
-  // Atomic Transaction Confirmation with Outbox Enqueue
-  Future<void> confirmTransaction({
-    required TransactionsCompanion txCompanion,
-    required OutboxOperationsCompanion outboxCompanion,
-  }) {
-    return transaction(() async {
-      await into(transactions).insert(txCompanion);
-      await into(outboxOperations).insert(outboxCompanion);
-    });
-  }
+  @override
+  MigrationStrategy get migration => MigrationStrategy(
+    onCreate: (m) async {
+      await m.createAll();
+      // One live budget per month/category; tombstones are kept for sync.
+      await customStatement(
+        'CREATE UNIQUE INDEX budgets_month_category ON budgets (user_id, month, category_id) WHERE deleted_at IS NULL',
+      );
+    },
+    onUpgrade: (m, from, to) async {
+      // Forward-only numbered migrations go here; never drop and recreate.
+      throw StateError('No migration path from $from to $to');
+    },
+    beforeOpen: (details) async {
+      await customStatement('PRAGMA foreign_keys = ON');
+    },
+  );
 }

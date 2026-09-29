@@ -2,7 +2,7 @@
 
 ## Status
 
-todo — specification ready; implementation not started.
+implemented — single-row transfers, swap, distinct accounts enforced on client and server.
 
 ## Goal
 

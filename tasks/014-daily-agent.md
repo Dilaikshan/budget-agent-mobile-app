@@ -2,7 +2,7 @@
 
 ## Status
 
-todo — specification ready; implementation not started.
+implemented — owner-only cron, fenced 90 s lease, work receipts, bounded items/attempts/time, insights publishing; tests pass. Live cron run pending configuration.
 
 ## Goal
 

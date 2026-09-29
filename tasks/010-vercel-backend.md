@@ -2,7 +2,7 @@
 
 ## Status
 
-todo — specification ready; implementation not started.
+implemented and deployed (https://budget-agent-backend.vercel.app) — guards, strict schemas, CAS/receipts/changes, rate limits; 154 vitest tests on an in-memory store. Firestore emulator tests NOT run (no Java/Firebase CLI locally); live data routes return 503 until Firebase secrets are configured.
 
 ## Goal
 

@@ -1,0 +1,10 @@
+{
+  "APP_ENV": "production",
+  "API_BASE_URL": "https://budget-agent-backend.vercel.app",
+  "FIREBASE_API_KEY": "<from Firebase console: Project settings > Your apps > Android app>",
+  "FIREBASE_APP_ID": "<1:1234567890:android:abc123>",
+  "FIREBASE_MESSAGING_SENDER_ID": "<1234567890>",
+  "FIREBASE_PROJECT_ID": "<your-firebase-project-id>",
+  "GOOGLE_SERVER_CLIENT_ID": "<Web client ID ending .apps.googleusercontent.com>",
+  "APP_CHECK_DEBUG": false
+}

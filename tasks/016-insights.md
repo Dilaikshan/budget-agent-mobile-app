@@ -2,7 +2,7 @@
 
 ## Status
 
-todo — specification ready; implementation not started.
+implemented — monthly budgets with subtree spend and overlap rules, deterministic summaries/trends/recurring insights with staleness.
 
 ## Goal
 

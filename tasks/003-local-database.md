@@ -2,7 +2,7 @@
 
 ## Status
 
-todo — specification ready; implementation not started.
+implemented — per-UID Drift schema v1 with CHECK/FK constraints, outbox, shadows, cursor, conflicts, drafts; in-memory tests pass. File-backed restart and migration tests pending (only schema v1 exists).
 
 ## Goal
 

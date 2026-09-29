@@ -2,7 +2,7 @@
 
 ## Status
 
-todo — specification ready; implementation not started.
+partial — no production bypasses, deny-all rules, redacted logging; secret/dependency scanning CI and rules emulator tests not yet added.
 
 ## Goal
 

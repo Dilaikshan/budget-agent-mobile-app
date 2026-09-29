@@ -2,7 +2,7 @@
 
 ## Status
 
-todo — specification ready; implementation not started.
+implemented — resumable six-step onboarding with confirmations; widget tests pass. Manual device run pending.
 
 ## Goal
 

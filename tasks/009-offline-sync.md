@@ -2,7 +2,7 @@
 
 ## Status
 
-todo — specification ready; implementation not started.
+implemented — pull/push/pull engine, receipt replay, conflicts keep/apply, blocked discard, cursor pause on unknown schema; tested against an in-test fake server. Two-real-device test pending.
 
 ## Goal
 

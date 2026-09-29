@@ -2,7 +2,7 @@
 
 ## Status
 
-todo — specification ready; implementation not started.
+partial — Flutter (3.47.5/Dart 3.13.4) and Node 22 shells, pinned lockfiles, env validation and test commands exist; CI workflow not yet added.
 
 ## Goal
 

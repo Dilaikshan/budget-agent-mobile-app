@@ -1,0 +1,6 @@
+{
+  "projects": {
+    "dev": "budget-agent-dev",
+    "prod": "budget-agent-prod"
+  }
+}

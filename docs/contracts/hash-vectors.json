@@ -1,0 +1,111 @@
+{
+  "description": "Shared canonical JSON / SHA-256 vectors (docs/02 Versioning). Both backend (vitest) and mobile (flutter test) must reproduce canonical and sha256 exactly.",
+  "version": 1,
+  "vectors": [
+    {
+      "name": "key order and null",
+      "input": {
+        "b": 1,
+        "a": null
+      },
+      "canonical": "{\"a\":null,\"b\":1}",
+      "sha256": "c0bf82ad036cb0a5a03d6759c1b7b8b1f70a39b32dd96ed3977c7f2831ee3b56"
+    },
+    {
+      "name": "nested objects keep array order",
+      "input": {
+        "z": [
+          3,
+          1,
+          {
+            "y": true,
+            "x": "é"
+          }
+        ],
+        "a": {
+          "c": "",
+          "b": -5
+        }
+      },
+      "canonical": "{\"a\":{\"b\":-5,\"c\":\"\"},\"z\":[3,1,{\"x\":\"é\",\"y\":true}]}",
+      "sha256": "91be1028dfd270a2fa063acbd3f7e2ac7120c650d072bfe5a7763bc4d145ea78"
+    },
+    {
+      "name": "string escapes",
+      "input": {
+        "s": "line\n\"q\"\\ \u0001 tab\t"
+      },
+      "canonical": "{\"s\":\"line\\n\\\"q\\\"\\\\ \\u0001 tab\\t\"}",
+      "sha256": "9fa1af565f9a431f977d36e4877a3597fc612ac4eb839e923c7553f3893e9914"
+    },
+    {
+      "name": "unicode keys sort by UTF-16 code unit",
+      "input": {
+        "නම": "කඩේ",
+        "emoji": "😀",
+        "Z": 0
+      },
+      "canonical": "{\"Z\":0,\"emoji\":\"😀\",\"නම\":\"කඩේ\"}",
+      "sha256": "72ea51c938954a293e671010232f020fcad2f81e0e97dbf90603e462473448e5"
+    },
+    {
+      "name": "max safe integer",
+      "input": {
+        "n": 9007199254740991,
+        "m": -9007199254740991
+      },
+      "canonical": "{\"m\":-9007199254740991,\"n\":9007199254740991}",
+      "sha256": "3f54c80abdfbc38f08ed5654622eea6e7d7e58cbac36cf5a0670c8aeb054703d"
+    },
+    {
+      "name": "expense confirmation input",
+      "input": {
+        "action": "create",
+        "entityType": "transaction",
+        "entityId": "6f1c1f2e-3b1a-4c55-9a51-4b3c2f1d0e9a",
+        "baseRevision": 0,
+        "dependsOnOpId": null,
+        "payload": {
+          "type": "expense",
+          "amountMinor": 250000,
+          "currency": "LKR",
+          "accountId": "0b8f5c2a-9d7e-4f61-8a3b-2c1d0e9f8a7b",
+          "destinationAccountId": null,
+          "incomeSourceId": null,
+          "categoryId": null,
+          "merchant": "KFC",
+          "description": "Lunch",
+          "occurredAt": "2026-09-09T06:30:00.000Z",
+          "effectiveDate": "2026-09-09",
+          "entryTimeZone": "Asia/Colombo",
+          "origin": "manual",
+          "categorizationSource": null,
+          "proposalId": null,
+          "openingDirection": null
+        }
+      },
+      "canonical": "{\"action\":\"create\",\"baseRevision\":0,\"dependsOnOpId\":null,\"entityId\":\"6f1c1f2e-3b1a-4c55-9a51-4b3c2f1d0e9a\",\"entityType\":\"transaction\",\"payload\":{\"accountId\":\"0b8f5c2a-9d7e-4f61-8a3b-2c1d0e9f8a7b\",\"amountMinor\":250000,\"categorizationSource\":null,\"categoryId\":null,\"currency\":\"LKR\",\"description\":\"Lunch\",\"destinationAccountId\":null,\"effectiveDate\":\"2026-09-09\",\"entryTimeZone\":\"Asia/Colombo\",\"incomeSourceId\":null,\"merchant\":\"KFC\",\"occurredAt\":\"2026-09-09T06:30:00.000Z\",\"openingDirection\":null,\"origin\":\"manual\",\"proposalId\":null,\"type\":\"expense\"}}",
+      "sha256": "75e8e11ccafddce0fd690bde543075d160f574a684eeda903565009773757e24"
+    }
+  ],
+  "rejections": [
+    {
+      "name": "fractional number",
+      "input": {
+        "n": 1.5
+      }
+    },
+    {
+      "name": "unsafe integer",
+      "input": {
+        "n": 9007199254740992
+      }
+    }
+  ],
+  "openingIds": [
+    {
+      "accountId": "0b8f5c2a-9d7e-4f61-8a3b-2c1d0e9f8a7b",
+      "openingId": "8b72b4c86edd5cc56d02eba8101eef725f44663ba65752f7a745d5cce0afd3cd"
+    }
+  ]
+}

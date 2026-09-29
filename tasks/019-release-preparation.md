@@ -2,7 +2,7 @@
 
 ## Status
 
-todo — specification ready; implementation not started.
+todo — release preparation and human production review not started.
 
 ## Goal
 

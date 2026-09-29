@@ -2,7 +2,7 @@
 
 ## Status
 
-todo — specification ready; implementation not started.
+implemented — AgentRun/AIActivity records and Activity timeline UI.
 
 ## Goal
 

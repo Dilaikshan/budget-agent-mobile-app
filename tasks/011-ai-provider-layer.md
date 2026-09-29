@@ -2,7 +2,7 @@
 
 ## Status
 
-todo — specification ready; implementation not started.
+implemented — Gemini primary (@ai-sdk/google 4), OpenRouter fallback with upstream allowlist, maxRetries 0, deadlines, persisted token/attempt budgets. Live provider smoke test blocked: no API keys provided; AI_ENABLED=false in production.
 
 ## Goal
 

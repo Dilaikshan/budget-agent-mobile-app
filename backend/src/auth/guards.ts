@@ -1,127 +1,62 @@
-import type { VercelRequest, VercelResponse } from '@vercel/node';
-import admin from 'firebase-admin';
-import { makeErrorEnvelope } from '../contracts/schemas.js';
+import crypto from 'node:crypto';
+import type { CoreConfig } from '../config/env.js';
+import { ApiError } from '../http/errors.js';
+import type { VerifiedOwner } from '../store/scope.js';
+import type { TokenVerifier } from './verifier.js';
 
-// Lazy initialize Firebase Admin
-let isInitialized = false;
-export function getFirebaseAdmin() {
-  if (!isInitialized && admin.apps.length === 0) {
-    const serviceAccountJson = process.env.FIREBASE_SERVICE_ACCOUNT_JSON;
-    if (serviceAccountJson) {
-      try {
-        const credentials = JSON.parse(serviceAccountJson);
-        admin.initializeApp({
-          credential: admin.credential.cert(credentials),
-        });
-      } catch (err) {
-        console.error('Failed to parse FIREBASE_SERVICE_ACCOUNT_JSON:', err);
-        admin.initializeApp();
-      }
-    } else {
-      admin.initializeApp();
-    }
-    isInitialized = true;
-  }
-  return admin;
+export interface AuthContext extends VerifiedOwner {
+  readonly source: 'idToken';
+  readonly appId: string;
 }
 
-export interface AuthContext {
-  uid: string;
-  email?: string;
-  appCheckValid: boolean;
+type Headers = Record<string, string | string[] | undefined>;
+
+function header(headers: Headers, name: string): string | undefined {
+  const v = headers[name];
+  return Array.isArray(v) ? undefined : v;
 }
 
-export async function authenticateRequest(
-  req: VercelRequest,
-  res: VercelResponse,
-  requestId: string
-): Promise<AuthContext | null> {
-  const authHeader = req.headers['authorization'];
-  if (!authHeader || !authHeader.startsWith('Bearer ')) {
-    res.status(401).json(
-      makeErrorEnvelope(
-        'UNAUTHENTICATED',
-        'Authorization Bearer token is missing or invalid.',
-        false,
-        requestId
-      )
-    );
-    return null;
-  }
+/**
+ * User API guard, in the order required by docs/07-SECURITY.md:
+ * ID token → owner/email → App Check. UID comes only from the verified token.
+ * There is no environment bypass; development uses App Check debug tokens.
+ */
+export async function authenticateUser(headers: Headers, core: CoreConfig, verifier: TokenVerifier): Promise<AuthContext> {
+  const authz = header(headers, 'authorization');
+  const match = authz?.match(/^Bearer ([A-Za-z0-9._-]{20,4096})$/);
+  if (!match) throw new ApiError('UNAUTHENTICATED');
 
-  const idToken = authHeader.split('Bearer ')[1].trim();
-  const appCheckToken = req.headers['x-firebase-appcheck'] as string | undefined;
-
+  let identity: { uid: string; emailVerified: boolean };
   try {
-    const fb = getFirebaseAdmin();
-    // Verify Firebase ID Token
-    const decodedToken = await fb.auth().verifyIdToken(idToken, true);
-    const uid = decodedToken.uid;
-
-    // Check personal owner allowlist if configured in env
-    const ownerAllowlist = process.env.OWNER_UID_ALLOWLIST
-      ? process.env.OWNER_UID_ALLOWLIST.split(',').map((u) => u.trim())
-      : null;
-
-    if (ownerAllowlist && !ownerAllowlist.includes(uid)) {
-      res.status(403).json(
-        makeErrorEnvelope(
-          'FORBIDDEN',
-          'User is not authorized for this budget agent instance.',
-          false,
-          requestId
-        )
-      );
-      return null;
-    }
-
-    // Verify App Check token if not in development bypass
-    let appCheckValid = false;
-    if (process.env.NODE_ENV === 'production' && process.env.ENFORCE_APP_CHECK === 'true') {
-      if (!appCheckToken) {
-        res.status(403).json(
-          makeErrorEnvelope(
-            'APP_CHECK_FAILED',
-            'Firebase App Check attestation token missing.',
-            false,
-            requestId
-          )
-        );
-        return null;
-      }
-      try {
-        await fb.appCheck().verifyToken(appCheckToken);
-        appCheckValid = true;
-      } catch (e) {
-        res.status(403).json(
-          makeErrorEnvelope(
-            'APP_CHECK_FAILED',
-            'Firebase App Check attestation failed.',
-            false,
-            requestId
-          )
-        );
-        return null;
-      }
-    } else {
-      appCheckValid = true;
-    }
-
-    return {
-      uid,
-      email: decodedToken.email,
-      appCheckValid,
-    };
-  } catch (err: unknown) {
-    console.error('Authentication error:', (err as Error)?.message);
-    res.status(401).json(
-      makeErrorEnvelope(
-        'UNAUTHENTICATED',
-        'Session expired or invalid credential. Re-authentication required.',
-        false,
-        requestId
-      )
-    );
-    return null;
+    identity = await verifier.verifyIdToken(match[1]!);
+  } catch {
+    throw new ApiError('UNAUTHENTICATED');
   }
+
+  if (!safeEqual(identity.uid, core.ownerUid)) throw new ApiError('FORBIDDEN');
+  if (!identity.emailVerified) throw new ApiError('EMAIL_UNVERIFIED');
+
+  const appCheck = header(headers, 'x-firebase-appcheck');
+  if (!appCheck || appCheck.length > 4096) throw new ApiError('APP_CHECK_FAILED');
+  let appId: string;
+  try {
+    ({ appId } = await verifier.verifyAppCheck(appCheck));
+  } catch {
+    throw new ApiError('APP_CHECK_FAILED');
+  }
+  if (!core.allowedAppIds.includes(appId)) throw new ApiError('APP_CHECK_FAILED');
+
+  return { uid: identity.uid, source: 'idToken', appId };
+}
+
+/** Cron guard: Authorization must equal "Bearer CRON_SECRET", compared in constant time. */
+export function authenticateCron(headers: Headers, cronSecret: string): void {
+  const authz = header(headers, 'authorization') ?? '';
+  if (!safeEqual(authz, `Bearer ${cronSecret}`)) throw new ApiError('UNAUTHENTICATED');
+}
+
+export function safeEqual(a: string, b: string): boolean {
+  const ha = crypto.createHash('sha256').update(a).digest();
+  const hb = crypto.createHash('sha256').update(b).digest();
+  return crypto.timingSafeEqual(ha, hb) && a.length === b.length;
 }

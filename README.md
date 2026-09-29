@@ -2,7 +2,7 @@
 
 An AI-first personal finance mobile application with an offline ledger and transparent, confirmable AI assistance. Enter “lunch kfc 2500 cash” or choose Food → Restaurant, review the same normalized transaction, and save immediately even without connectivity.
 
-**Repository status:** complete documentation baseline, 2026-09-29: 15 numbered specifications and 19 implementation tasks. No Flutter project, backend source, installed dependencies or deployed services exist yet. The two original Word files are preserved as historical inputs; the Markdown specifications replace their conflicting guidance.
+**Repository status (2026-09-29):** backend implemented, tested (154 tests) and deployed to Vercel at https://budget-agent-backend.vercel.app (health live; data/AI routes wait for Firebase and model secrets). Flutter Android app implemented with 40 passing unit/widget tests. Export/restore, CI workflows, emulator/device tests and release review remain; see task statuses and [MANUAL_STEPS.md](MANUAL_STEPS.md).
 
 ## Capabilities and stack
 
@@ -27,18 +27,19 @@ Diagrams are embedded in the owning specifications to avoid duplicate versions. 
 
 ## Local setup and workflow
 
-Start with [task 001](tasks/001-project-bootstrap.md). Install/pin a supported Flutter stable SDK, compatible Node LTS, npm and Firebase CLI; record actual versions and commit lockfiles during bootstrap. Select Android first for the personal MVP; iOS build/attestation verification requires macOS.
-
-Task 001 will scaffold mobile/backend and define these commands; they are **planned**, not runnable today:
+Toolchain used: Flutter 3.47.5 (Dart 3.13.4), Node 22 (Vercel runtime 22.x), npm lockfile and pubspec.lock committed.
 
 ```text
-mobile:  flutter pub get; dart run build_runner build --delete-conflicting-outputs
-mobile:  flutter analyze; flutter test; flutter run --flavor dev
-backend: npm ci; npm run typecheck; npm test; npm run dev
-root:    firebase emulators:start --only auth,firestore
+backend:  npm ci; npm run typecheck; npm test
+          vercel deploy --prod            (project root = backend/)
+mobile:   flutter pub get
+          dart run build_runner build     (only after changing Drift tables)
+          flutter analyze; flutter test
+          flutter run --dart-define-from-file=env/dev.json
+root:     firebase deploy --only firestore:rules,firestore:indexes
 ```
 
-Use Auth/Firestore emulators and fake model providers by default. Create development Firebase/Vercel environments only when required. Follow [deployment](docs/12-DEPLOYMENT.md) for secrets and production configuration. Work one ready task at a time, run its tests, update documentation and attach acceptance evidence. Do not enable production AI with private financial data before the provider-privacy release gate passes.
+Operator setup (Firebase project, secrets, owner UID, App Check, model keys) is in [MANUAL_STEPS.md](MANUAL_STEPS.md). Fake/in-memory adapters back all automated tests; no live provider or production data is used by CI. Do not enable production AI with private financial data before the provider-privacy gate in docs/07 passes.
 
 ## Documentation index
 

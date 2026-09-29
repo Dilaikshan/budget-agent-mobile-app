@@ -2,7 +2,7 @@
 
 ## Status
 
-todo — specification ready; implementation not started.
+implemented — classify endpoint, revision-bound category proposals, explicit 'Remember merchant → category' rules.
 
 ## Goal
 

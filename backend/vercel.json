@@ -1,9 +1,7 @@
 {
-  "version": 2,
-  "crons": [
-    {
-      "path": "/api/jobs/daily-agent",
-      "schedule": "0 21 * * *"
-    }
-  ]
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "functions": {
+    "api/**/*.ts": { "maxDuration": 60 }
+  },
+  "crons": [{ "path": "/api/jobs/daily-agent", "schedule": "0 1 * * *" }]
 }

@@ -1,109 +1,233 @@
 import 'package:dio/dio.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_app_check/firebase_app_check.dart';
-import '../config/app_config.dart';
+import 'package:uuid/uuid.dart';
 
-class ApiClient {
+import '../domain/result.dart';
+
+/// Authenticated HTTP client for /api/v1 (docs/05). Tokens come from injected
+/// sources so tests never touch Firebase; bodies are never logged.
+abstract interface class CredentialSource {
+  Future<String?> idToken({bool forceRefresh = false});
+  Future<String?> appCheckToken();
+}
+
+class ApiFailure implements Exception {
+  ApiFailure(
+    this.status,
+    this.code, {
+    this.retryable = false,
+    this.retryAfter,
+    this.fields = const [],
+  });
+
+  /// HTTP status; 0 for network failures.
+  final int status;
+  final String code;
+  final bool retryable;
+  final Duration? retryAfter;
+  final List<Map<String, Object?>> fields;
+
+  bool get isNetwork => status == 0;
+  bool get isTransient =>
+      status == 0 || status == 408 || status == 429 || status >= 500;
+  bool get isAuth => status == 401 || status == 403;
+
+  AppError toAppError() {
+    final kind = switch (code) {
+      'UNAUTHENTICATED' => ErrorKind.unauthenticated,
+      'FORBIDDEN' ||
+      'EMAIL_UNVERIFIED' ||
+      'APP_CHECK_FAILED' => ErrorKind.forbidden,
+      'AI_DISABLED' => ErrorKind.aiDisabled,
+      'PRIVACY_NOT_ELIGIBLE' => ErrorKind.privacyNotEligible,
+      'RATE_LIMITED' || 'AI_BUDGET_EXHAUSTED' => ErrorKind.rateLimited,
+      'REVISION_CONFLICT' => ErrorKind.conflict,
+      'STALE_PROPOSAL' => ErrorKind.staleProposal,
+      'NOT_FOUND' || 'MISSING_REFERENCE' => ErrorKind.missingReference,
+      'VALIDATION_ERROR' || 'AMBIGUOUS_INPUT' => ErrorKind.validation,
+      _ => ErrorKind.unavailable,
+    };
+    return AppError(kind, _message(code), code: code, retryAfter: retryAfter);
+  }
+
+  static String _message(String code) => switch (code) {
+    'UNAUTHENTICATED' => 'Sign in again to sync.',
+    'EMAIL_UNVERIFIED' => 'Verify your email to sync.',
+    'FORBIDDEN' => 'This account is not allowed on this server.',
+    'APP_CHECK_FAILED' => 'App verification failed; sync is paused.',
+    'AI_DISABLED' => 'AI assistance is off. Enter details manually.',
+    'PRIVACY_NOT_ELIGIBLE' =>
+      'AI needs your consent in Settings. Enter details manually.',
+    'RATE_LIMITED' => 'Too many requests; try again shortly.',
+    'AI_BUDGET_EXHAUSTED' => 'Daily AI limit reached. Enter details manually.',
+    'AI_UNAVAILABLE' => 'AI unavailable — enter details.',
+    'NETWORK' => 'You are offline. Everything is saved on this device.',
+    _ => 'Service unavailable; your data is safe on this device.',
+  };
+
+  @override
+  String toString() => 'ApiFailure($status, $code)';
+}
+
+abstract interface class SyncApi {
+  Future<List<Map<String, Object?>>> push(
+    List<Map<String, Object?>> operations,
+  );
+  Future<Map<String, Object?>> changes({
+    required int afterSeq,
+    int? watermark,
+    int limit = 100,
+  });
+}
+
+class ApiClient implements SyncApi {
+  ApiClient({
+    required Uri baseUrl,
+    required this.credentials,
+    Dio? dio,
+    Uuid? uuid,
+  }) : _uuid = uuid ?? const Uuid(),
+       dio =
+           dio ??
+           Dio(
+             BaseOptions(
+               baseUrl: baseUrl.toString(),
+               connectTimeout: const Duration(seconds: 10),
+               sendTimeout: const Duration(seconds: 15),
+               receiveTimeout: const Duration(seconds: 30),
+               headers: {
+                 'Content-Type': 'application/json',
+                 'Cache-Control': 'no-store',
+               },
+               responseType: ResponseType.json,
+             ),
+           );
+
   final Dio dio;
-  final AppConfig config;
+  final CredentialSource credentials;
+  final Uuid _uuid;
 
-  ApiClient({required this.config, Dio? customDio})
-      : dio = customDio ??
-            Dio(
-              BaseOptions(
-                baseUrl: config.backendBaseUrl,
-                connectTimeout: const Duration(seconds: 15),
-                receiveTimeout: const Duration(seconds: 15),
-                headers: {
-                  'Content-Type': 'application/json',
-                  'Cache-Control': 'no-store',
-                },
-              ),
-            ) {
-    dio.interceptors.add(
-      InterceptorsWrapper(
-        onRequest: (options, handler) async {
-          // 1. Attach Firebase ID token
-          final user = FirebaseAuth.instance.currentUser;
-          if (user != null) {
-            final idToken = await user.getIdToken();
-            if (idToken != null) {
-              options.headers['Authorization'] = 'Bearer $idToken';
-            }
-          }
+  Future<Map<String, Object?>> _send(
+    String method,
+    String path, {
+    Object? body,
+    Map<String, Object?>? query,
+    Map<String, String>? headers,
+    CancelToken? cancel,
+  }) async {
+    Future<Response<Object?>> attempt(bool forceRefresh) async {
+      final token = await credentials.idToken(forceRefresh: forceRefresh);
+      if (token == null) throw ApiFailure(401, 'UNAUTHENTICATED');
+      final appCheck = await credentials.appCheckToken();
+      return dio.request<Object?>(
+        path,
+        data: body,
+        queryParameters: query,
+        cancelToken: cancel,
+        options: Options(
+          method: method,
+          headers: {
+            'Authorization': 'Bearer $token',
+            'X-Firebase-AppCheck': ?appCheck,
+            'X-Client-Request-Id': _uuid.v4(),
+            ...?headers,
+          },
+        ),
+      );
+    }
 
-          // 2. Attach Firebase App Check token if available
-          try {
-            final appCheckToken = await FirebaseAppCheck.instance.getToken();
-            if (appCheckToken != null) {
-              options.headers['X-Firebase-AppCheck'] = appCheckToken;
-            }
-          } catch (_) {
-            // App check in dev or unsupported platform
-          }
+    try {
+      Response<Object?> res;
+      try {
+        res = await attempt(false);
+      } on DioException catch (e) {
+        // Refresh the ID token once after an auth-expiry response; never loop.
+        if (e.response?.statusCode != 401) rethrow;
+        res = await attempt(true);
+      }
+      final data = (res.data as Map).cast<String, Object?>();
+      return (data['data'] as Map).cast<String, Object?>();
+    } on DioException catch (e) {
+      throw _failure(e);
+    }
+  }
 
-          return handler.next(options);
-        },
-        onError: (DioException error, handler) async {
-          if (error.response?.statusCode == 401) {
-            // Attempt token refresh once
-            try {
-              final user = FirebaseAuth.instance.currentUser;
-              if (user != null) {
-                final newToken = await user.getIdToken(true);
-                if (newToken != null) {
-                  final opts = error.requestOptions;
-                  opts.headers['Authorization'] = 'Bearer $newToken';
-                  final cloneReq = await dio.fetch(opts);
-                  return handler.resolve(cloneReq);
-                }
-              }
-            } catch (_) {}
-          }
-          return handler.next(error);
-        },
-      ),
+  ApiFailure _failure(DioException e) {
+    final r = e.response;
+    if (r == null) return ApiFailure(0, 'NETWORK', retryable: true);
+    final retryAfterHeader = int.tryParse(r.headers.value('retry-after') ?? '');
+    final body = r.data;
+    if (body is Map && body['error'] is Map) {
+      final err = (body['error'] as Map).cast<String, Object?>();
+      return ApiFailure(
+        r.statusCode ?? 0,
+        err['code'] as String? ?? 'UNKNOWN',
+        retryable: err['retryable'] == true,
+        retryAfter: retryAfterHeader == null
+            ? null
+            : Duration(seconds: retryAfterHeader.clamp(0, 3600)),
+        fields: ((err['fields'] as List?) ?? const [])
+            .cast<Map>()
+            .map((m) => m.cast<String, Object?>())
+            .toList(),
+      );
+    }
+    return ApiFailure(
+      r.statusCode ?? 0,
+      'UNKNOWN',
+      retryable: (r.statusCode ?? 0) >= 500,
     );
   }
 
-  // Push local outbox operations to backend
-  Future<Response> pushOperations(List<Map<String, dynamic>> operations) {
-    return dio.post(
+  @override
+  Future<List<Map<String, Object?>>> push(
+    List<Map<String, Object?>> operations,
+  ) async {
+    final data = await _send(
+      'POST',
       '/api/v1/sync/push',
-      data: {'operations': operations},
+      body: {'operations': operations},
     );
+    return (data['results'] as List)
+        .cast<Map>()
+        .map((m) => m.cast<String, Object?>())
+        .toList();
   }
 
-  // Pull remote changes sequence
-  Future<Response> getChanges({required int afterSeq, int limit = 100}) {
-    return dio.get(
-      '/api/v1/sync/changes',
-      queryParameters: {
-        'afterSeq': afterSeq,
-        'limit': limit,
-      },
-    );
-  }
+  @override
+  Future<Map<String, Object?>> changes({
+    required int afterSeq,
+    int? watermark,
+    int limit = 100,
+  }) => _send(
+    'GET',
+    '/api/v1/sync/changes',
+    query: {
+      'afterSeq': '$afterSeq',
+      if (watermark != null) 'watermark': '$watermark',
+      'limit': '$limit',
+    },
+  );
 
-  // Natural language transaction parse with AI
-  Future<Response> parseTransaction({
-    required String draftId,
-    required String rawInput,
-    required String referenceNow,
-    required String timeZone,
-    required String currency,
+  Future<Map<String, Object?>> parseTransaction(
+    Map<String, Object?> request, {
     required String idempotencyKey,
-  }) {
-    return dio.post(
-      '/api/v1/agent/parse-transaction',
-      options: Options(headers: {'Idempotency-Key': idempotencyKey}),
-      data: {
-        'draftId': draftId,
-        'rawInput': rawInput,
-        'referenceNow': referenceNow,
-        'timeZone': timeZone,
-        'currency': currency,
-      },
-    );
-  }
+    CancelToken? cancel,
+  }) => _send(
+    'POST',
+    '/api/v1/agent/parse-transaction',
+    body: request,
+    headers: {'Idempotency-Key': idempotencyKey},
+    cancel: cancel,
+  );
+
+  Future<Map<String, Object?>> classifyTransaction(
+    String transactionId,
+    int baseRevision, {
+    required String idempotencyKey,
+  }) => _send(
+    'POST',
+    '/api/v1/agent/classify-transaction',
+    body: {'transactionId': transactionId, 'baseRevision': baseRevision},
+    headers: {'Idempotency-Key': idempotencyKey},
+  );
 }

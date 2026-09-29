@@ -3,25 +3,32 @@ node_modules/
 .pnp
 .pnp.js
 
-# Build Outputs
+# Build outputs
 dist/
 build/
 .vercel/
+.localbuild/
 
-# Flutter / Dart build artifacts
+# Flutter / Dart build artifacts (pubspec.lock and generated Drift code ARE committed)
 .dart_tool/
 .packages
-build/
-*.g.dart
-*.lock
+.flutter-plugins
+.flutter-plugins-dependencies
 
-# Environment & Secrets
+# Environment & secrets
 .env
 .env.local
 .env.production
 *.key
 *.pem
+*.jks
+*.keystore
+key.properties
 serviceAccountKey.json
+google-services.json
+GoogleService-Info.plist
+mobile/env/*.json
+!mobile/env/*.example.json
 
 # IDE & OS
 .DS_Store

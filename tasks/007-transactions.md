@@ -2,7 +2,7 @@
 
 ## Status
 
-todo — specification ready; implementation not started.
+implemented — shared draft validator for AI and category entry, confirmation sheet, edit/delete tombstones, history; widget tests pass.
 
 ## Goal
 

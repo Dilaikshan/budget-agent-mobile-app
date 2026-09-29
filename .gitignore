@@ -1,0 +1,30 @@
+# Dependencies
+node_modules/
+.pnp
+.pnp.js
+
+# Build Outputs
+dist/
+build/
+.vercel/
+
+# Flutter / Dart build artifacts
+.dart_tool/
+.packages
+build/
+*.g.dart
+*.lock
+
+# Environment & Secrets
+.env
+.env.local
+.env.production
+*.key
+*.pem
+serviceAccountKey.json
+
+# IDE & OS
+.DS_Store
+.idea/
+.vscode/
+*.swp

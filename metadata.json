@@ -1,0 +1,8 @@
+{
+  "name": "Budget AI Agent",
+  "description": "An AI-powered offline-first budget, ledger, and spending insights app with deterministic double-entry ledger invariants, natural language transaction parsing, and rule-based categorization.",
+  "requestFramePermissions": [],
+  "capabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}

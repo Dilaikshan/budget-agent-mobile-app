@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../app/brand.dart';
+
 import '../../../app/providers.dart';
 import '../../../core/domain/result.dart';
 import '../../../core/widgets/common.dart';
@@ -96,7 +98,7 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
   Widget build(BuildContext context) {
     final auth = ref.read(authRepositoryProvider);
     return Scaffold(
-      appBar: AppBar(title: const Text('Budget Agent')),
+      appBar: AppBar(title: const Text(Brand.name)),
       body: SafeArea(
         child: ListView(
           padding: const EdgeInsets.all(16),

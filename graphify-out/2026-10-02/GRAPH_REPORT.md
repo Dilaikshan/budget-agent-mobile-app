@@ -1,17 +1,17 @@
 # Graph Report - budgent-agent-system  (2026-10-02)
 
 ## Corpus Check
-- 186 files · ~262,426 words
+- 181 files · ~224,659 words
 - Verdict: corpus is large enough that graph structure adds value.
-- Unclassified: 25 file(s) not represented in the graph (top: .xml 11, (none) 7, .example 2)
+- Unclassified: 23 file(s) not represented in the graph (top: .xml 9, (none) 7, .example 2)
 
 ## Summary
-- 2945 nodes · 5149 edges · 123 communities (115 shown, 8 thin omitted)
-- Extraction: 98% EXTRACTED · 2% INFERRED · 0% AMBIGUOUS · INFERRED: 80 edges (avg confidence: 0.85)
+- 2837 nodes · 4996 edges · 132 communities (122 shown, 10 thin omitted)
+- Extraction: 99% EXTRACTED · 1% INFERRED · 0% AMBIGUOUS · INFERRED: 56 edges (avg confidence: 0.81)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `e98826f1`
+- Built from commit: `706dd9b6`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -27,16 +27,16 @@
 - profileProvider
 - parse.ts
 - agent_repository.dart
-- api.ts
-- package:flutter/material.dart
+- agent.ts
+- transaction_detail_screen.dart
 - DataClass
-- accounts_screen.dart
+- shared.dart
 - quick_parser.dart
 - daily.ts
 - transaction.dart
 - providers.ts
 - budgets_screen.dart
-- animated_splash.dart
+- service.ts
 - ledger_repository.dart
 - package.json
 - sign_in_screen.dart
@@ -46,11 +46,11 @@
 - money.dart
 - providers.dart
 - router.dart
-- contracts.test.ts
+- agents/insights.ts
 - CanonicalRecord
 - auth_repository.dart
 - budget_ai_agent_technical_document_bd08a242.md
-- route.ts
+- deps.ts
 - DocStore
 - core_test.dart
 - sync_engine.dart
@@ -64,31 +64,31 @@
 - confirmation_sheet.dart
 - categories_screen.dart
 - budget_ai_agent_architecture_document_716bf834.md
-- App.tsx
-- motion.dart
+- src/ledger.ts
+- accounts_screen.dart
 - Architecture decisions and reconciliation
 - transactions_test.dart
-- 4. Mobile (`mobile/`)
+- main.dart
 - category_repository.dart
 - env.ts
 - fake_server.dart
-- Budget Agent — System Documentation (as implemented)
+- App.tsx
 - common.dart
 - selectors.dart
 - helpers.dart
 - budget_repository.dart
 - profile_repository.dart
 - time.dart
-- deps.ts
+- TransactionParserModal.tsx
 - compilerOptions
 - StatelessWidget
 - compilerOptions
-- server.ts
+- syncControllerProvider
 - screens_test.dart
 - Budget Agent — manual setup, step by step
 - ledger.dart
 - text.dart
-- scripts
+- src/types.ts
 - canonical_json.dart
 - 001 — Project bootstrap
 - 002 — Authentication and session boundaries
@@ -110,12 +110,13 @@
 - 018 — Security and privacy release gates
 - 019 — Release preparation and operator handoff
 - System architecture
-- T
+- Implementation plan
 - devDependencies
-- vite
+- canonical.ts
 - Endpoint inventory
 - Security specification
 - UI and UX design
+- pendingOpsProvider
 - theme.dart
 - AI agent design
 - Offline synchronization
@@ -126,43 +127,51 @@
 - Product overview
 - Data model
 - Testing strategy
+- devDependencies
 - vercel.json
 - Observability
-- _SplashOverlayState
+- _ConfirmationSheet
+- Dashboard.tsx
 - Coding agent instructions
-- README.md
+- Budget Agent
+- BudgetsView.tsx
+- Exception
+- AppDatabase
+- 14-FUTURE-ROADMAP.md
 - FlutterActivity
 - privacy.dart
+- ReferenceLookup
+- SyncApi
 - budget_agent
 
 ## God Nodes (most connected - your core abstractions)
 1. `_` - 71 edges
 2. `runDaily()` - 34 edges
-3. `UserScope` - 32 edges
+3. `UserScope` - 31 edges
 4. `run()` - 29 edges
-5. `ApiError` - 25 edges
-6. `publishChange()` - 23 edges
-7. `profileProvider` - 23 edges
+5. `ApiError` - 24 edges
+6. `profileProvider` - 23 edges
+7. `publishChange()` - 22 edges
 8. `Architecture decisions and reconciliation` - 21 edges
 9. `mutation()` - 20 edges
 10. `CanonicalRecord` - 19 edges
 
 ## Surprising Connections (you probably didn't know these)
-- `3.7 AI layer (`src/ai`, `src/agents`)` --references--> `AIProposal`  [INFERRED]
-  docs/TECHNICAL-DOCUMENTATION.md → src/types.ts
-- `3.2 Request pipeline (`src/http/route.ts`)` --references--> `authenticateUser()`  [INFERRED]
-  docs/TECHNICAL-DOCUMENTATION.md → backend/src/auth/guards.ts
-- `3.2 Request pipeline (`src/http/route.ts`)` --references--> `ConfigError`  [INFERRED]
-  docs/TECHNICAL-DOCUMENTATION.md → backend/src/config/env.ts
-- `3.4 Configuration (`src/config/env.ts`)` --references--> `loadAiConfig()`  [INFERRED]
-  docs/TECHNICAL-DOCUMENTATION.md → backend/src/config/env.ts
-- `3.6 Sync protocol (`src/sync`)` --references--> `Change`  [INFERRED]
-  docs/TECHNICAL-DOCUMENTATION.md → backend/src/contracts/entities.ts
+- `OwnerState` --references--> `CanonicalRecord`  [EXTRACTED]
+  backend/src/agents/context.ts → backend/src/contracts/entities.ts
+- `getDeps()` --indirect_call--> `defaultModelFactory()`  [INFERRED]
+  backend/src/http/deps.ts → backend/src/ai/providers.ts
+- `TransactionPayloadSchema` --calls--> `localDateOf()`  [EXTRACTED]
+  backend/src/contracts/entities.ts → backend/src/contracts/primitives.ts
+- `agentDeps()` --calls--> `UserScope`  [EXTRACTED]
+  backend/src/routes/agent.ts → backend/src/store/scope.ts
+- `deps()` --calls--> `MemoryStore`  [EXTRACTED]
+  backend/test/http.test.ts → backend/src/store/memory.ts
 
 ## Import Cycles
 - None detected.
 
-## Communities (123 total, 8 thin omitted)
+## Communities (132 total, 10 thin omitted)
 
 ### Community 0 - "app_database.dart"
 Cohesion: 0.01
@@ -173,8 +182,8 @@ Cohesion: 0.02
 Nodes (101): accountId, action, agentType, aiEnabled, amountMinor, archived, attempts, baseCurrency (+93 more)
 
 ### Community 2 - "entities.ts"
-Cohesion: 0.06
-Nodes (47): ParseRequestSchema, AccountPayload, AccountPayloadSchema, AppSettingsPayload, AppSettingsPayloadSchema, BudgetPayload, BudgetPayloadSchema, CanonicalMutation (+39 more)
+Cohesion: 0.05
+Nodes (58): Action, ActionSchema, ChangesQuerySchema, ClassifyRequest, ClassifyRequestSchema, ClassifyResponse, Confirmation, ConfirmationSchema (+50 more)
 
 ### Community 3 - "_"
 Cohesion: 0.03
@@ -186,75 +195,75 @@ Nodes (54): _accountId, _aiLoading, _aiMessage, _amount, _apply, _cancel, _cance
 
 ### Community 5 - "transactions_screen.dart"
 Cohesion: 0.05
-Nodes (31): ActivityView, a, ActivityScreen, _ActivityScreenState, _ActivityTile, _agentLabel, build, createState (+23 more)
+Nodes (32): ActivityView, a, ActivityScreen, _ActivityScreenState, _ActivityTile, _agentLabel, build, createState (+24 more)
 
 ### Community 6 - "onboarding_screen.dart"
 Cohesion: 0.05
 Nodes (43): profileRepositoryProvider, _SourceDialog, _AccountsStep, _accountTypes, _add, _ai, _AiStep, _busy (+35 more)
 
 ### Community 7 - "rules.ts"
-Cohesion: 0.09
-Nodes (31): activeRecords(), OwnerState, AccountRef, applyRules(), capitalize(), categoryByNames(), CategoryRef, DEPOSIT_WORDS (+23 more)
+Cohesion: 0.07
+Nodes (43): OwnerState, AccountRef, applyRules(), capitalize(), categoryByNames(), CategoryRef, DEPOSIT_WORDS, EXPENSE_WORDS (+35 more)
 
 ### Community 8 - "profileProvider"
-Cohesion: 0.14
-Nodes (36): accountBalancesProvider, activeAccountsProvider, categoriesProvider, clockProvider, incomeSourcesProvider, ledgerRepositoryProvider, localStoreProvider, profileProvider (+28 more)
+Cohesion: 0.11
+Nodes (44): accountBalancesProvider, activeAccountsProvider, categoriesProvider, categoryRepositoryProvider, clockProvider, incomeSourcesProvider, ledgerRepositoryProvider, localStoreProvider (+36 more)
 
 ### Community 9 - "parse.ts"
-Cohesion: 0.10
-Nodes (52): CategorySuggestion, classifyTransaction(), persist(), suggestCategory(), consentStatus(), historyCategory(), loadOwnerState(), loadParseContext() (+44 more)
+Cohesion: 0.14
+Nodes (39): CategorySuggestion, classifyTransaction(), persist(), suggestCategory(), consentStatus(), historyCategory(), loadOwnerState(), Begin (+31 more)
 
 ### Community 10 - "agent_repository.dart"
 Cohesion: 0.05
 Nodes (38): AgentRepository, aiMessage, api, candidate, confidence, createdAt, _db, dismissInsight (+30 more)
 
-### Community 11 - "api.ts"
-Cohesion: 0.05
-Nodes (42): ActionSchema, ChangesQuerySchema, ClassifyRequest, ClassifyRequestSchema, ClassifyResponse, Confirmation, ConfirmationSchema, IdempotencyKeySchema (+34 more)
+### Community 11 - "agent.ts"
+Cohesion: 0.09
+Nodes (24): UuidSchema, ApiError, ERROR_STATUS, ErrorCode, RETRYABLE, SAFE_MESSAGES, zodIssuesToFields(), errorName() (+16 more)
 
-### Community 12 - "package:flutter/material.dart"
-Cohesion: 0.05
-Nodes (36): background, backgroundGlow, Brand, emerald, markAsset, mint, mintLight, name (+28 more)
+### Community 12 - "transaction_detail_screen.dart"
+Cohesion: 0.06
+Nodes (24): InsightView, ProposalView, insight, _showEvidence, stale, createState, currency, exponent (+16 more)
 
 ### Community 13 - "DataClass"
 Cohesion: 0.10
 Nodes (36): AccountRow, AccountsCompanion, ActivityRow, AgentRunRow, AgentRunsCompanion, AiActivitiesCompanion, AiInsightsCompanion, AiProposalsCompanion (+28 more)
 
-### Community 14 - "accounts_screen.dart"
-Cohesion: 0.05
-Nodes (54): accountRepositoryProvider, reviewCountProvider, _Shell, AccountDetailScreen, AccountsScreen, _accountTypes, build, _CreateAccountForm (+46 more)
+### Community 14 - "shared.dart"
+Cohesion: 0.09
+Nodes (31): reviewCountProvider, AccountsScreen, build, showCreateAccountDialog, build, build, HomeScreen, budgetMonthProvider (+23 more)
 
 ### Community 15 - "quick_parser.dart"
 Cohesion: 0.05
 Nodes (35): accountId, amountText, byToken, cash, categoryId, description, destinationId, draft (+27 more)
 
 ### Community 16 - "daily.ts"
-Cohesion: 0.12
-Nodes (40): checkpoint(), cleanup(), finishRun(), ItemOutcome, JobResult, Lease, LeaseLost, MAX_ATTEMPTS (+32 more)
+Cohesion: 0.16
+Nodes (28): activeRecords(), loadParseContext(), checkpoint(), cleanup(), finishRun(), ItemOutcome, JobResult, Lease (+20 more)
 
 ### Community 17 - "transaction.dart"
 Cohesion: 0.06
 Nodes (30): accountId, amount, amountMinor, amountText, buildPayload, CategorizationSource, categoryId, checkAccount (+22 more)
 
 ### Community 18 - "providers.ts"
-Cohesion: 0.07
-Nodes (30): description, engines, node, @types/node, typescript, name, private, scripts (+22 more)
+Cohesion: 0.08
+Nodes (26): description, engines, node, @types/node, typescript, name, private, scripts (+18 more)
 
 ### Community 19 - "budgets_screen.dart"
-Cohesion: 0.09
-Nodes (19): budgetRepositoryProvider, _amount, BudgetsScreen, _BudgetsScreenState, categories, _category, createState, currency (+11 more)
+Cohesion: 0.07
+Nodes (22): budgetRepositoryProvider, _amount, BudgetsScreen, _BudgetsScreenState, categories, _category, createState, currency (+14 more)
 
-### Community 20 - "animated_splash.dart"
-Cohesion: 0.09
-Nodes (18): armAsset, bodyAsset, _BubblePainter, build, child, createState, didChangeDependencies, dispose (+10 more)
+### Community 20 - "service.ts"
+Cohesion: 0.08
+Nodes (29): AccountPayload, AppSettingsPayload, BudgetPayload, CanonicalMutation, CategorizationRulePayload, CategoryPayload, Change, COLLECTION_BY_ENTITY (+21 more)
 
 ### Community 21 - "ledger_repository.dart"
 Cohesion: 0.06
 Nodes (30): accountId, accountName, _accounts, _categories, categoryId, categoryName, confirmCreate, confirmDelete (+22 more)
 
 ### Community 22 - "package.json"
-Cohesion: 0.13
-Nodes (14): @types/node, typescript, name, private, type, version, clsx, react-dom (+6 more)
+Cohesion: 0.07
+Nodes (27): @types/node, typescript, name, private, scripts, build, dev, lint (+19 more)
 
 ### Community 23 - "sign_in_screen.dart"
 Cohesion: 0.08
@@ -265,32 +274,32 @@ Cohesion: 0.06
 Nodes (30): acceptCategoryProposal, account, _accounts, amount, c, _categories, category, categoryId (+22 more)
 
 ### Community 25 - "agents.test.ts"
-Cohesion: 0.09
-Nodes (41): Action, Operation, canonicalHash(), canonicalJson(), CanonicalJsonError, compareCodeUnits(), openingTransactionId(), sha256Hex() (+33 more)
+Cohesion: 0.15
+Nodes (24): confirmationHashInput(), validateBatch(), ai, parseEnv(), Script, scripted(), account(), category() (+16 more)
 
 ### Community 26 - "api_client.dart"
-Cohesion: 0.06
-Nodes (27): FirebaseCredentials, ApiClient, appCheckToken, changes, classifyTransaction, code, credentials, CredentialSource (+19 more)
+Cohesion: 0.07
+Nodes (24): FirebaseCredentials, appCheckToken, changes, classifyTransaction, code, credentials, CredentialSource, dio (+16 more)
 
 ### Community 27 - "money.dart"
 Cohesion: 0.07
 Nodes (26): abs, allowZero, _ambiguousComma, body, buffer, checkedSum, _decimal, digits (+18 more)
 
 ### Community 28 - "providers.dart"
-Cohesion: 0.04
-Nodes (50): agentRepositoryProvider, api, apiClientProvider, appCheckToken, appConfigProvider, blockedOpsProvider, build, client (+42 more)
+Cohesion: 0.08
+Nodes (19): agentRepositoryProvider, api, apiClientProvider, appCheckToken, client, databaseProvider, db, _debounce (+11 more)
 
 ### Community 29 - "router.dart"
 Cohesion: 0.07
 Nodes (6): build, false, onboardingStateProvider, ping, profile, refresh
 
-### Community 30 - "contracts.test.ts"
-Cohesion: 0.22
-Nodes (11): extractAmount(), MAX_AMOUNT_MINOR, balance(), effect(), LedgerTransaction, periodTotals(), checkedSum(), DecimalParse (+3 more)
+### Community 30 - "agents/insights.ts"
+Cohesion: 0.15
+Nodes (20): buildInsights(), formatMinor(), InsightDraft, InsightFacts, median(), balance(), effect(), LedgerTransaction (+12 more)
 
 ### Community 31 - "CanonicalRecord"
-Cohesion: 0.22
-Nodes (9): CanonicalRecord, SyncState, Conflict, ReferenceReader, Rejection, reviewStateRecord(), SyncService, ValidatedOperation (+1 more)
+Cohesion: 0.20
+Nodes (8): CanonicalRecord, StoreTransaction, Conflict, ReferenceReader, Rejection, reviewStateRecord(), SyncService, ValidatedOperation
 
 ### Community 32 - "auth_repository.dart"
 Cohesion: 0.08
@@ -300,33 +309,33 @@ Nodes (22): _auth, AuthRepository, currentUser, email, _googleInitialized, googl
 Cohesion: 0.07
 Nodes (26): 10. Account Balance Calculation, 11. Vercel Agent API Structure, 12. Vercel Environment Variables, 13. Authentication Flow for Agent Calls, 14. Agent Tool Design, 15. LLM Routing Policy, 16. Structured AI Contracts, 17. Real-Time Transaction Flow (+18 more)
 
-### Community 34 - "route.ts"
+### Community 34 - "deps.ts"
 Cohesion: 0.15
-Nodes (17): AuthContext, authenticateCron(), authenticateUser(), header(), Headers, safeEqual(), TokenVerifier, Deps (+9 more)
+Nodes (18): DailyDeps, ModelFactory, AuthContext, authenticateCron(), authenticateUser(), header(), Headers, safeEqual() (+10 more)
 
 ### Community 35 - "DocStore"
-Cohesion: 0.11
-Nodes (16): FirestoreStore, clone(), compare(), MemoryStore, runQuery(), DocData, DocStore, QuerySpec (+8 more)
+Cohesion: 0.17
+Nodes (9): FirestoreStore, clone(), compare(), MemoryStore, runQuery(), DocData, DocStore, QuerySpec (+1 more)
 
 ### Community 36 - "core_test.dart"
-Cohesion: 0.07
-Nodes (21): ReferenceLookup, ReferenceSnapshot, a, account, accounts, balances, confirm, createAccount (+13 more)
+Cohesion: 0.08
+Nodes (18): a, account, accounts, balances, confirm, createAccount, entries, expense (+10 more)
 
 ### Community 37 - "sync_engine.dart"
 Cohesion: 0.08
 Nodes (21): accepted, api, _batchSize, conflicts, _cycle, _defer, _deferAll, deferred (+13 more)
 
 ### Community 38 - "router.ts"
-Cohesion: 0.14
-Nodes (20): ClassifyDeps, DailyDeps, AgentDeps, BudgetExhaustedError, BudgetLimits, dayKey(), estimateTokens(), reconcile() (+12 more)
+Cohesion: 0.13
+Nodes (20): ClassifyDeps, AgentDeps, BudgetExhaustedError, BudgetLimits, dayKey(), estimateTokens(), reconcile(), Reservation (+12 more)
 
 ### Community 39 - "account_repository.dart"
 Cohesion: 0.08
 Nodes (21): a, account, AccountBalance, accountPayload, AccountRepository, all, balanceMinor, _balanceSql (+13 more)
 
 ### Community 40 - "http.test.ts"
-Cohesion: 0.11
-Nodes (10): handler(), consoleLogger, LogEvent, SAFE_FIELDS, silentLogger, T0, core, headers (+2 more)
+Cohesion: 0.09
+Nodes (12): handler(), setDepsForTesting(), consoleLogger, LogEvent, SAFE_FIELDS, silentLogger, T0, core (+4 more)
 
 ### Community 41 - "codecs.dart"
 Cohesion: 0.09
@@ -342,27 +351,27 @@ Nodes (19): _allowDebugInRelease, _api, apiBaseUrl, _apiKey, appCheckDebug, AppC
 
 ### Community 44 - "result.dart"
 Cohesion: 0.11
-Nodes (13): AppError, code, error, ErrorKind, fields, isOk, kind, message (+5 more)
+Nodes (16): AppError, code, Err, error, ErrorKind, fields, isOk, kind (+8 more)
 
 ### Community 45 - "confirmation_sheet.dart"
 Cohesion: 0.09
 Nodes (16): build, _busy, ConfirmRow, createState, destructive, emphasis, label, note (+8 more)
 
 ### Community 46 - "categories_screen.dart"
-Cohesion: 0.09
-Nodes (23): categoryRepositoryProvider, incomeSourceRepositoryProvider, ruleRepositoryProvider, _account, all, _askName, _CategoryTree, controller (+15 more)
+Cohesion: 0.10
+Nodes (20): incomeSourceRepositoryProvider, ruleRepositoryProvider, _account, all, _askName, controller, _create, createState (+12 more)
 
 ### Community 47 - "budget_ai_agent_architecture_document_716bf834.md"
 Cohesion: 0.09
 Nodes (21): 10. Agent Capabilities, 11. Security Architecture, 12. Data Privacy Boundaries, 13. Deployment Architecture, 14. Cost-Control Strategy, 15. Future Architecture Extensions, 1. Executive Summary, 2. Architecture Goals (+13 more)
 
-### Community 48 - "App.tsx"
-Cohesion: 0.09
-Nodes (67): lucide-react, react, App(), AccountsView(), AccountsViewProps, AIActivityView(), AIActivityViewProps, BudgetsView() (+59 more)
+### Community 48 - "src/ledger.ts"
+Cohesion: 0.19
+Nodes (19): SettingsView(), SettingsViewProps, initialAccounts, initialBudgets, initialCategories, initialIncomeSources, initialProfile, initialRules (+11 more)
 
-### Community 49 - "motion.dart"
-Cohesion: 0.10
-Nodes (15): _a, build, _c, child, createState, currency, didChangeDependencies, dispose (+7 more)
+### Community 49 - "accounts_screen.dart"
+Cohesion: 0.11
+Nodes (18): accountRepositoryProvider, AccountDetailScreen, _accountTypes, _CreateAccountForm, _CreateAccountFormState, createState, _date, _editOpening (+10 more)
 
 ### Community 50 - "Architecture decisions and reconciliation"
 Cohesion: 0.10
@@ -372,33 +381,33 @@ Nodes (21): ADR-01 — Flutter, Riverpod and go_router, ADR-02 — Drift is the 
 Cohesion: 0.10
 Nodes (17): choose, close, ensureVisible, enterAmount, enterText, env, f, field (+9 more)
 
-### Community 52 - "4. Mobile (`mobile/`)"
-Cohesion: 0.12
-Nodes (16): 1. Repository layout, 2. Toolchain and dependencies, 4.1 Structure, 4.2 Configuration (build defines), 4.3 Local database (Drift, schema v1), 4.4 Write path and confirmation binding, 4.5 Sync engine (`core/sync/sync_engine.dart`), 4.6 UI architecture (+8 more)
+### Community 52 - "main.dart"
+Cohesion: 0.10
+Nodes (9): config, _connectivity, createState, dispose, _foregroundTimer, initializeApp, loaded, main (+1 more)
 
 ### Community 53 - "category_repository.dart"
 Cohesion: 0.10
 Nodes (18): all, CategoryRepository, create, _db, defaults, delete, enabled, IncomeSourceRepository (+10 more)
 
 ### Community 54 - "env.ts"
-Cohesion: 0.15
+Cohesion: 0.16
 Nodes (15): AiEnvSchema, AppEnv, AppEnvSchema, blankToUndefined(), boolFlag, ConfigError, CoreEnvSchema, Env (+7 more)
 
 ### Community 55 - "fake_server.dart"
-Cohesion: 0.08
-Nodes (18): AppDatabase, _changes, dropNextResponse, failWith, injectChange, _now, pageLimit, _process (+10 more)
+Cohesion: 0.10
+Nodes (17): _changes, dropNextResponse, failWith, injectChange, _now, pageLimit, _process, _publish (+9 more)
 
-### Community 56 - "Budget Agent — System Documentation (as implemented)"
-Cohesion: 0.13
-Nodes (15): 1. What the system is, 2. The parts, 3. Core concepts, 4.1 First run: sign in and onboarding, 4.2 Recording a transaction (both entry paths), 4.3 Sync (pull → push → pull), 4.4 AI parsing on the server, 4.5 Daily review (runs at 01:00 UTC ≈ 06:30 Sri Lanka) (+7 more)
+### Community 56 - "App.tsx"
+Cohesion: 0.22
+Nodes (16): react-dom, App(), AccountsView(), AIActivityView(), BudgetsView(), CategoriesView(), Header(), HeaderProps (+8 more)
 
 ### Community 57 - "common.dart"
-Cohesion: 0.10
-Nodes (16): actions, build, currency, EmptyState, exponent, icon, info, kind (+8 more)
+Cohesion: 0.11
+Nodes (13): actions, build, currency, exponent, icon, info, kind, message (+5 more)
 
 ### Community 58 - "selectors.dart"
-Cohesion: 0.10
-Nodes (16): accounts, allowNegative, allowNone, build, categories, controller, currency, DateField (+8 more)
+Cohesion: 0.11
+Nodes (15): accounts, allowNegative, allowNone, build, categories, controller, currency, errorText (+7 more)
 
 ### Community 59 - "helpers.dart"
 Cohesion: 0.11
@@ -406,19 +415,19 @@ Nodes (10): db, dispose, overrides, settle, store, testConfig, TestEnv, testNow 
 
 ### Community 60 - "budget_repository.dart"
 Cohesion: 0.11
-Nodes (17): LocalStore, budget, BudgetProgress, BudgetRepository, categoryName, create, _db, delete (+9 more)
+Nodes (16): budget, BudgetProgress, BudgetRepository, categoryName, create, _db, delete, payload (+8 more)
 
 ### Community 61 - "profile_repository.dart"
 Cohesion: 0.11
-Nodes (14): _db, defaultSettings, profile, profilePayload, profilePayloadOf, ProfileRepository, saveProfile, saveSettings (+6 more)
+Nodes (15): LocalStore, _db, defaultSettings, profile, profilePayload, profilePayloadOf, ProfileRepository, saveProfile (+7 more)
 
 ### Community 62 - "time.dart"
 Cohesion: 0.11
 Nodes (15): addDays, d, ensureTimeZones, firstOfNextMonth, _initialized, isValidTimeZone, local, localDateOf (+7 more)
 
-### Community 63 - "deps.ts"
-Cohesion: 0.24
-Nodes (9): firebaseApp(), FirebaseTokenVerifier, firestore(), AiConfig, CoreConfig, getDeps(), setDepsForTesting(), 3.2 Request pipeline (`src/http/route.ts`) (+1 more)
+### Community 63 - "TransactionParserModal.tsx"
+Cohesion: 0.37
+Nodes (13): lucide-react, react, AccountsViewProps, CategoriesViewProps, DashboardProps, ManualTransactionModalProps, TransactionParserModalProps, TransactionsViewProps (+5 more)
 
 ### Community 64 - "compilerOptions"
 Cohesion: 0.11
@@ -426,22 +435,22 @@ Nodes (17): compilerOptions, allowImportingTsExtensions, isolatedModules, jsx, l
 
 ### Community 67 - "StatelessWidget"
 Cohesion: 0.12
-Nodes (16): BrandedLoading, _Mascot, _SplashFrame, _Splash, ErrorBanner, CountUpMoney, AccountSelector, AmountField (+8 more)
+Nodes (16): _Splash, EmptyState, ErrorBanner, MoneyText, SyncBadge, AccountSelector, AmountField, CategoryPicker (+8 more)
 
 ### Community 68 - "compilerOptions"
 Cohesion: 0.12
 Nodes (15): compilerOptions, esModuleInterop, forceConsistentCasingInFileNames, lib, module, moduleResolution, noEmit, noImplicitOverride (+7 more)
 
-### Community 69 - "server.ts"
-Cohesion: 0.22
-Nodes (6): express, @google/genai, AccountInfo, app, CategoryInfo, IncomeSourceInfo
+### Community 69 - "syncControllerProvider"
+Cohesion: 0.16
+Nodes (13): appConfigProvider, currentUidProvider, syncControllerProvider, userProvider, routerProvider, _RouterRefresh, build, _suggestCategory (+5 more)
 
 ### Community 70 - "screens_test.dart"
-Cohesion: 0.12
-Nodes (7): main, main, dispose, _finish, main, pump, pumpWidget
+Cohesion: 0.13
+Nodes (6): main, dispose, _finish, main, pump, pumpWidget
 
 ### Community 71 - "Budget Agent — manual setup, step by step"
-Cohesion: 0.13
+Cohesion: 0.12
 Nodes (15): 10. Set your owner UID, 11. Turn on Gemini (optional, after the privacy review), 12. Check the daily agent, 13. Before a real release (not done yet), 1. Create the Firebase project, 2. Enable sign-in providers, 3. Register the Android app, 4. Deploy Firestore rules and indexes (deny-all client access) (+7 more)
 
 ### Community 72 - "ledger.dart"
@@ -452,13 +461,13 @@ Nodes (15): accountId, amountMinor, balanceOf, categoryId, deleted, destinationA
 Cohesion: 0.15
 Nodes (10): boundedText, codePointLength, descriptionLimit, merchantLimit, nameLimit, normalizeMerchant, normalizeText, rawInputLimit (+2 more)
 
-### Community 74 - "scripts"
-Cohesion: 0.40
-Nodes (5): scripts, build, dev, lint, preview
+### Community 74 - "src/types.ts"
+Cohesion: 0.18
+Nodes (11): AIActivityViewProps, AccountType, AgentType, AIActivity, AIProposal, CategorizationSource, CategoryType, IncomeSourceType (+3 more)
 
 ### Community 75 - "canonical_json.dart"
-Cohesion: 0.12
-Nodes (11): UnsupportedSchemaException, canonicalHash, canonicalJson, CanonicalJsonException, message, openingTransactionId, out, sha256Hex (+3 more)
+Cohesion: 0.17
+Nodes (8): canonicalHash, canonicalJson, message, openingTransactionId, out, sha256Hex, toString, _write
 
 ### Community 76 - "001 — Project bootstrap"
 Cohesion: 0.17
@@ -505,8 +514,8 @@ Cohesion: 0.17
 Nodes (12): 011 — AI provider routing and budgets, Acceptance criteria, Completion evidence, Definition of done, Dependencies, Documentation updates, Goal, Implementation scope (+4 more)
 
 ### Community 87 - "012 — Natural-language transaction proposals"
-Cohesion: 0.08
-Nodes (23): Estimate and scope control, Execution order, Implementation plan, Phase 1 — Foundation and identity, Phase 2 — Local domain and onboarding, Phase 3 — Deterministic ledger, Phase 4 — Authenticated replication, Phase 5 — Interactive AI and transparency (+15 more)
+Cohesion: 0.17
+Nodes (12): 012 — Natural-language transaction proposals, Acceptance criteria, Completion evidence, Definition of done, Dependencies, Documentation updates, Goal, Implementation scope (+4 more)
 
 ### Community 88 - "013 — Categorization and explicit rule learning"
 Cohesion: 0.17
@@ -540,17 +549,17 @@ Nodes (12): 019 — Release preparation and operator handoff, Acceptance criteri
 Cohesion: 0.18
 Nodes (11): AI provider flow, Authentication, Backend architecture, Containers and components, Daily execution, Flutter architecture, Offline sync, Responsibilities (+3 more)
 
-### Community 96 - "T"
-Cohesion: 0.67
-Nodes (3): Err, Ok, Result
+### Community 96 - "Implementation plan"
+Cohesion: 0.18
+Nodes (11): Estimate and scope control, Execution order, Implementation plan, Phase 1 — Foundation and identity, Phase 2 — Local domain and onboarding, Phase 3 — Deterministic ledger, Phase 4 — Authenticated replication, Phase 5 — Interactive AI and transparency (+3 more)
 
 ### Community 97 - "devDependencies"
 Cohesion: 0.18
 Nodes (11): devDependencies, tailwindcss, @tailwindcss/vite, tsx, @types/express, @types/node, @types/react, @types/react-dom (+3 more)
 
-### Community 98 - "vite"
-Cohesion: 0.50
-Nodes (3): @tailwindcss/vite, vite, @vitejs/plugin-react
+### Community 98 - "canonical.ts"
+Cohesion: 0.33
+Nodes (9): canonicalHash(), canonicalJson(), CanonicalJsonError, compareCodeUnits(), openingTransactionId(), sha256Hex(), operationRequestHash(), payloadSchemaFor() (+1 more)
 
 ### Community 99 - "Endpoint inventory"
 Cohesion: 0.20
@@ -563,6 +572,10 @@ Nodes (10): Abuse, dependencies and environment gates, App Check, Authentication
 ### Community 101 - "UI and UX design"
 Cohesion: 0.20
 Nodes (10): Accounts, sources, categories and transfers, AI Activity and Insights, Design philosophy, Entry flows, History, conflicts and budgets, Home dashboard, Navigation and reusable components, Onboarding (+2 more)
+
+### Community 102 - "pendingOpsProvider"
+Cohesion: 0.33
+Nodes (9): blockedOpsProvider, build, conflictsProvider, cursorProvider, pendingOpsProvider, build, MoreScreen, build (+1 more)
 
 ### Community 103 - "theme.dart"
 Cohesion: 0.20
@@ -589,20 +602,24 @@ Cohesion: 0.25
 Nodes (8): dependencies, clsx, express, @google/genai, lucide-react, react, react-dom, tailwind-merge
 
 ### Community 109 - "dependencies"
-Cohesion: 0.14
-Nodes (13): dependencies, ai, @ai-sdk/google, @ai-sdk/provider, firebase-admin, @openrouter/ai-sdk-provider, zod, devDependencies (+5 more)
+Cohesion: 0.29
+Nodes (7): dependencies, ai, @ai-sdk/google, @ai-sdk/provider, firebase-admin, @openrouter/ai-sdk-provider, zod
 
 ### Community 110 - "Product overview"
 Cohesion: 0.29
 Nodes (7): AI-first experience, Domain vocabulary and scope, Future scope, Goals and success criteria, MVP requirements and coverage, Problem and differentiator, Product overview
 
 ### Community 111 - "Data model"
-Cohesion: 0.25
-Nodes (8): Common types and ownership, Data model, Entities, Firestore paths and indexes, Ledger mathematics, Retention and recovery, Supporting entities and metadata, Transaction payload
+Cohesion: 0.29
+Nodes (7): Common types and ownership, Data model, Entities, Ledger mathematics, Retention and recovery, Supporting entities and metadata, Transaction payload
 
 ### Community 112 - "Testing strategy"
 Cohesion: 0.29
 Nodes (7): Agent goldens and evaluation, CI and definition of done, End-to-end release scenarios, Ledger invariants, Sync fault matrix, Test layers, Testing strategy
+
+### Community 113 - "devDependencies"
+Cohesion: 0.33
+Nodes (6): devDependencies, fast-check, @types/node, typescript, @vercel/node, vitest
 
 ### Community 114 - "vercel.json"
 Cohesion: 0.33
@@ -612,36 +629,56 @@ Nodes (5): maxDuration, crons, functions, api/**/*.ts, $schema
 Cohesion: 0.33
 Nodes (6): AgentRun and AI Activity, Correlation and events, Metrics and operating targets, Observability, Retention and incident response, Three audiences
 
-### Community 116 - "_SplashOverlayState"
-Cohesion: 0.21
-Nodes (8): SplashOverlay, _SplashOverlayState, _ConfirmationSheet, _ConfirmationSheetState, StaggerIn, _StaggerInState, _BudgetDialog, _BudgetDialogState
+### Community 116 - "_ConfirmationSheet"
+Cohesion: 0.40
+Nodes (4): _ConfirmationSheet, _ConfirmationSheetState, _BudgetDialog, _BudgetDialogState
+
+### Community 117 - "Dashboard.tsx"
+Cohesion: 0.53
+Nodes (5): Dashboard(), calculateAccountBalance(), calculatePeriodExpense(), calculatePeriodIncome(), AIInsight
 
 ### Community 118 - "Coding agent instructions"
 Cohesion: 0.40
 Nodes (4): Architecture and invariants, Coding agent instructions, Security and coding, Task execution and completion
 
-### Community 119 - "README.md"
-Cohesion: 0.19
-Nodes (7): Future roadmap, Suggested progression, Budget Agent, Capabilities and stack, Documentation index, Local setup and workflow, Repository layout
+### Community 119 - "Budget Agent"
+Cohesion: 0.40
+Nodes (5): Budget Agent, Capabilities and stack, Documentation index, Local setup and workflow, Repository layout
+
+### Community 120 - "BudgetsView.tsx"
+Cohesion: 0.50
+Nodes (4): BudgetsViewProps, calculateCategorySpending(), currentMonthStr, Budget
+
+### Community 121 - "Exception"
+Cohesion: 0.50
+Nodes (3): UnsupportedSchemaException, CanonicalJsonException, ApiFailure
+
+### Community 127 - "ReferenceLookup"
+Cohesion: 0.67
+Nodes (3): ReferenceLookup, ReferenceSnapshot, _Refs
+
+### Community 128 - "SyncApi"
+Cohesion: 0.67
+Nodes (3): ApiClient, SyncApi, FakeServer
 
 ## Knowledge Gaps
-- **1799 isolated node(s):** `name`, `version`, `private`, `description`, `type` (+1794 more)
-  These have ≤1 connection - possible missing edges or undocumented components. (Counts symbols only; 1973 node(s) total have ≤1 connection when file, concept and rationale nodes are included.)
-- **8 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
+- **1730 isolated node(s):** `name`, `version`, `private`, `description`, `type` (+1725 more)
+  These have ≤1 connection - possible missing edges or undocumented components. (Counts symbols only; 1898 node(s) total have ≤1 connection when file, concept and rationale nodes are included.)
+- **10 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **Why does `3. Backend (`backend/`)` connect `DocStore` to `parse.ts`, `4. Mobile (`mobile/`)`, `env.ts`, `deps.ts`, `CanonicalRecord`?**
-  _High betweenness centrality (0.050) - this node is a cross-community bridge._
-- **Why does `Budget Agent — Technical Documentation (as implemented)` connect `4. Mobile (`mobile/`)` to `DocStore`, `README.md`?**
-  _High betweenness centrality (0.048) - this node is a cross-community bridge._
-- **Why does `3.7 AI layer (`src/ai`, `src/agents`)` connect `parse.ts` to `App.tsx`, `providers.ts`, `DocStore`?**
-  _High betweenness centrality (0.036) - this node is a cross-community bridge._
+- **Why does `Data model` connect `Data model` to `daily.ts`, `03-IMPLEMENTATION-PLAN.md`?**
+  _High betweenness centrality (0.066) - this node is a cross-community bridge._
+- **Why does `Firestore paths and indexes` connect `daily.ts` to `Data model`?**
+  _High betweenness centrality (0.066) - this node is a cross-community bridge._
+- **Why does `SyncService` connect `CanonicalRecord` to `daily.ts`, `agents.test.ts`, `agent.ts`, `service.ts`?**
+  _High betweenness centrality (0.024) - this node is a cross-community bridge._
 - **Are the 5 inferred relationships involving `runDaily()` (e.g. with `.collection()` and `.doc()`) actually correct?**
   _`runDaily()` has 5 INFERRED edges - model-reasoned connections that need verification._
 - **What connects `name`, `version`, `private` to the rest of the system?**
-  _1799 weakly-connected nodes found - possible documentation gaps or missing edges._
+  _1730 weakly-connected nodes found - possible documentation gaps or missing edges._
 - **Should `app_database.dart` be split into smaller, more focused modules?**
   _Cohesion score 0.00851063829787234 - nodes in this community are weakly interconnected._
 - **Should `tables.dart` be split into smaller, more focused modules?**

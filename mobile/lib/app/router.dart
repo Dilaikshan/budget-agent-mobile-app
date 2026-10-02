@@ -19,6 +19,7 @@ import '../features/transactions/presentation/review_screen.dart';
 import '../features/transactions/presentation/sync_screen.dart';
 import '../features/transactions/presentation/transaction_detail_screen.dart';
 import '../features/transactions/presentation/transactions_screen.dart';
+import 'animated_splash.dart';
 import 'providers.dart';
 
 /// Route guards distinguish signed-out, email-verification, onboarding and
@@ -179,8 +180,7 @@ class _Splash extends StatelessWidget {
   const _Splash();
 
   @override
-  Widget build(BuildContext context) =>
-      const Scaffold(body: Center(child: CircularProgressIndicator()));
+  Widget build(BuildContext context) => const BrandedLoading();
 }
 
 /// Bottom navigation: Home, Transactions, Insights, More; persistent Add

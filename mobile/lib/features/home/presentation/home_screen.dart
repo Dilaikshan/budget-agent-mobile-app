@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import '../../../app/providers.dart';
 import '../../../core/domain/time.dart';
 import '../../../core/widgets/common.dart';
+import '../../../core/widgets/motion.dart';
 import '../../transactions/presentation/entry_sheet.dart';
 import 'shared.dart';
 import 'tx_tile.dart';
@@ -73,7 +74,7 @@ class HomeScreen extends ConsumerWidget {
         final insight = insights.isEmpty ? null : insights.first;
         return ListView(
           padding: const EdgeInsets.only(bottom: 96),
-          children: [
+          children: staggered([
             if (sync.message != null)
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -96,7 +97,7 @@ class HomeScreen extends ConsumerWidget {
                       ],
                     ),
                     const SizedBox(height: 4),
-                    MoneyText(
+                    CountUpMoney(
                       total,
                       currency: money.currency,
                       exponent: money.exponent,
@@ -319,7 +320,7 @@ class HomeScreen extends ConsumerWidget {
                 ),
               ),
             ),
-          ],
+          ]),
         );
       }),
     );

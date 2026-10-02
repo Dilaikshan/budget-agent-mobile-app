@@ -147,6 +147,8 @@ void main() {
     await tester.runAsync(env.seed);
     await tester.pumpWidget(env.wrap(const HomeScreen()));
     await settle(tester);
+    // Let the balance count-up animation finish.
+    await tester.pump(const Duration(seconds: 1));
     expect(find.text('Recorded balance'), findsOneWidget);
     expect(find.text('LKR 105,000.00'), findsOneWidget);
     expect(

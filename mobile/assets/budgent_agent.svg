@@ -1,0 +1,396 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500 500" width="100%" height="100%">
+  <defs>
+    <!-- Background Vignette -->
+    <radialGradient id="cardBg" cx="50%" cy="45%" r="65%">
+      <stop offset="0%" stop-color="#0E2E28"/>
+      <stop offset="60%" stop-color="#071916"/>
+      <stop offset="100%" stop-color="#020907"/>
+    </radialGradient>
+
+    <!-- Emerald / Mint Cyan Neon Gradients -->
+    <linearGradient id="neonMint" x1="0%" y1="100%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#10B981"/>
+      <stop offset="50%" stop-color="#34D399"/>
+      <stop offset="100%" stop-color="#6EE7B7"/>
+    </linearGradient>
+
+    <linearGradient id="neonGlowGrad" x1="0%" y1="100%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#059669"/>
+      <stop offset="60%" stop-color="#10B981"/>
+      <stop offset="100%" stop-color="#5EEAD4"/>
+    </linearGradient>
+
+    <!-- Metallic Silver Bezel -->
+    <linearGradient id="silverPlate" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#E2E8F0"/>
+      <stop offset="45%" stop-color="#94A3B8"/>
+      <stop offset="80%" stop-color="#475569"/>
+      <stop offset="100%" stop-color="#1E293B"/>
+    </linearGradient>
+
+    <!-- Coin Inner Plate -->
+    <linearGradient id="innerCoin" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#134E48"/>
+      <stop offset="60%" stop-color="#0F2D27"/>
+      <stop offset="100%" stop-color="#051B17"/>
+    </linearGradient>
+
+    <!-- 3D Robot Ceramic Body Shader -->
+    <linearGradient id="robotWhite" x1="20%" y1="0%" x2="80%" y2="100%">
+      <stop offset="0%" stop-color="#FFFFFF"/>
+      <stop offset="55%" stop-color="#E2E8F0"/>
+      <stop offset="85%" stop-color="#94A3B8"/>
+      <stop offset="100%" stop-color="#64748B"/>
+    </linearGradient>
+
+    <!-- 3D Robot Visor Glass Shader -->
+    <linearGradient id="robotVisor" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#042F2C"/>
+      <stop offset="60%" stop-color="#021C1A"/>
+      <stop offset="100%" stop-color="#010B0A"/>
+    </linearGradient>
+
+    <!-- Glow Filter -->
+    <filter id="neonBloom" x="-30%" y="-30%" width="160%" height="160%">
+      <feGaussianBlur stdDeviation="7" result="blur"/>
+      <feComposite in="SourceGraphic" in2="blur" operator="over"/>
+    </filter>
+
+    <style>
+      /* --- 1. SQUIRCLE FRAME POP IN --- */
+      @keyframes squircleSnap {
+        0% { transform: scale(0.7); opacity: 0; }
+        25% { transform: scale(1.03); opacity: 1; }
+        35%, 100% { transform: scale(1); opacity: 1; }
+      }
+
+      /* --- 2. COIN CRASH IN FROM BACK --- */
+      @keyframes coinSlam {
+        0% {
+          transform: scale(0.05) rotate(-140deg);
+          opacity: 0;
+        }
+        25% {
+          transform: scale(1.12) rotate(8deg);
+          opacity: 1;
+        }
+        35%, 100% {
+          transform: scale(1) rotate(0deg);
+          opacity: 1;
+        }
+      }
+
+      /* --- 3. CURRENCY SYMBOL DROP FROM TOP --- */
+      @keyframes symbolDrop {
+        0%, 15% {
+          transform: translateY(-280px) scale(0.3);
+          opacity: 0;
+        }
+        32% {
+          transform: translateY(12px) scale(1.1);
+          opacity: 1;
+        }
+        40%, 100% {
+          transform: translateY(0px) scale(1);
+          opacity: 1;
+        }
+      }
+
+      /* --- 4. NEON SURGE ARROW SHOOTING --- */
+      @keyframes arrowRocket {
+        0%, 10% {
+          transform: translate(-320px, 320px) scale(0.4);
+          opacity: 0;
+        }
+        33% {
+          transform: translate(15px, -15px) scale(1.05);
+          opacity: 1;
+        }
+        42%, 100% {
+          transform: translate(0px, 0px) scale(1);
+          opacity: 1;
+        }
+      }
+
+      /* --- 5. SPEED PARTICLES --- */
+      @keyframes particlePull {
+        0% { opacity: 0; stroke-dashoffset: 120; }
+        20% { opacity: 0.9; stroke-dashoffset: 0; }
+        35%, 100% { opacity: 0; }
+      }
+
+      /* --- 6. SHOCKWAVE BLAST --- */
+      @keyframes impactBlast {
+        0%, 28% { transform: scale(0.2); opacity: 0; }
+        35% { transform: scale(1.3); opacity: 1; }
+        50%, 100% { transform: scale(1.7); opacity: 0; }
+      }
+
+      /* --- 7. BRAND REVEAL --- */
+      @keyframes textReveal {
+        0%, 35% { opacity: 0; transform: translateY(20px); }
+        50%, 100% { opacity: 1; transform: translateY(0px); }
+      }
+
+      /* --- 8. 3D ROBOT ENTRANCE & FLOAT --- */
+      @keyframes robotEntrance {
+        0%, 40% {
+          opacity: 0;
+          transform: translate(320px, 450px) scale(0.3);
+        }
+        52% {
+          opacity: 1;
+          transform: translate(320px, 395px) scale(1.1);
+        }
+        60%, 100% {
+          opacity: 1;
+          transform: translate(320px, 405px) scale(1);
+        }
+      }
+
+      /* --- 9. ROBOT ARM WAVING "HI" --- */
+      @keyframes robotWaveHi {
+        0%, 54% {
+          transform: rotate(0deg);
+        }
+        60% {
+          transform: rotate(-35deg);
+        }
+        68% {
+          transform: rotate(-10deg);
+        }
+        76% {
+          transform: rotate(-35deg);
+        }
+        84% {
+          transform: rotate(-10deg);
+        }
+        92%, 100% {
+          transform: rotate(-25deg);
+        }
+      }
+
+      /* --- 10. "HI!" BUBBLE POP --- */
+      @keyframes bubblePop {
+        0%, 55% {
+          opacity: 0;
+          transform: scale(0.2) translate(350px, 375px);
+        }
+        62% {
+          opacity: 1;
+          transform: scale(1.15) translate(350px, 375px);
+        }
+        70%, 100% {
+          opacity: 1;
+          transform: scale(1) translate(350px, 375px);
+        }
+      }
+
+      .anim-squircle {
+        transform-origin: 250px 250px;
+        animation: squircleSnap 4s cubic-bezier(0.16, 1, 0.3, 1) infinite;
+      }
+      .anim-coin {
+        transform-origin: 240px 250px;
+        animation: coinSlam 4s cubic-bezier(0.16, 1, 0.3, 1) infinite;
+      }
+      .anim-symbol {
+        transform-origin: 240px 245px;
+        animation: symbolDrop 4s cubic-bezier(0.34, 1.56, 0.64, 1) infinite;
+      }
+      .anim-arrow {
+        transform-origin: 250px 250px;
+        animation: arrowRocket 4s cubic-bezier(0.16, 1, 0.3, 1) infinite;
+      }
+      .anim-shockwave {
+        transform-origin: 240px 250px;
+        animation: impactBlast 4s ease-out infinite;
+      }
+      .anim-converge {
+        stroke-dasharray: 40 80;
+        animation: particlePull 4s ease-out infinite;
+      }
+      .anim-title {
+        animation: textReveal 4s cubic-bezier(0.16, 1, 0.3, 1) infinite;
+      }
+      .anim-robot {
+        animation: robotEntrance 4s cubic-bezier(0.34, 1.56, 0.64, 1) infinite;
+      }
+      .anim-wave-arm {
+        transform-origin: 348px 412px;
+        animation: robotWaveHi 4s ease-in-out infinite;
+      }
+      .anim-bubble {
+        transform-origin: 350px 375px;
+        animation: bubblePop 4s cubic-bezier(0.16, 1, 0.3, 1) infinite;
+      }
+    </style>
+  </defs>
+
+  <!-- App Squircle Tile Base -->
+  <rect class="anim-squircle" width="470" height="470" x="15" y="15" rx="100" fill="url(#cardBg)" stroke="#10B981" stroke-width="2.5" stroke-opacity="0.35"/>
+
+  <!-- Energy Converge Streamlines -->
+  <g class="anim-converge" stroke="#34D399" stroke-width="2" opacity="0.6">
+    <line x1="20" y1="20" x2="200" y2="200"/>
+    <line x1="480" y1="20" x2="280" y2="200"/>
+    <line x1="20" y1="480" x2="200" y2="300"/>
+    <line x1="480" y1="480" x2="280" y2="300"/>
+  </g>
+
+  <!-- Impact Shockwave Wave -->
+  <circle class="anim-shockwave" cx="240" cy="250" r="110" fill="none" stroke="#6EE7B7" stroke-width="6" filter="url(#neonBloom)"/>
+
+  <!-- ================= 1. FLYING COIN BASE ================= -->
+  <g class="anim-coin" transform="translate(10, 5)">
+    <!-- Outer Silver / Metallic Ring -->
+    <circle cx="230" cy="245" r="115" fill="none" stroke="url(#silverPlate)" stroke-width="12"/>
+    <circle cx="230" cy="245" r="109" fill="none" stroke="#051B17" stroke-width="2"/>
+
+    <!-- Inner Coin Disk -->
+    <circle cx="230" cy="245" r="105" fill="url(#innerCoin)"/>
+
+    <!-- Inner Neon Rim -->
+    <circle cx="230" cy="245" r="92" fill="none" stroke="url(#neonMint)" stroke-width="4.5" opacity="0.85" filter="url(#neonBloom)"/>
+  </g>
+
+  <!-- ================= 2. FALLING CURRENCY SYMBOL ================= -->
+  <g class="anim-symbol" transform="translate(10, 5)">
+    <line x1="230" y1="185" x2="230" y2="255" stroke="url(#neonMint)" stroke-width="8" stroke-linecap="round" filter="url(#neonBloom)"/>
+    <path d="M 248 205 
+             C 215 195 200 215 202 235 
+             C 204 255 220 270 248 262" 
+          fill="none" 
+          stroke="url(#neonMint)" 
+          stroke-width="8" 
+          stroke-linecap="round" 
+          filter="url(#neonBloom)"/>
+  </g>
+
+  <!-- ================= 3. ROCKETING SURGE ARROW ================= -->
+  <g class="anim-arrow">
+    <!-- Tail Speed Streamlines -->
+    <g stroke="url(#neonGlowGrad)" stroke-linecap="round" opacity="0.85" filter="url(#neonBloom)">
+      <line x1="110" y1="365" x2="135" y2="330" stroke-width="3"/>
+      <line x1="122" y1="380" x2="150" y2="342" stroke-width="4.5"/>
+      <line x1="135" y1="392" x2="168" y2="350" stroke-width="3"/>
+    </g>
+
+    <!-- Arrow Base Track -->
+    <path d="M 130 365 L 205 245 L 245 285 L 360 160" 
+          fill="none" 
+          stroke="#064E3B" 
+          stroke-width="26" 
+          stroke-linecap="square" 
+          stroke-linejoin="miter"/>
+
+    <!-- Inner Neon Glowing Rail -->
+    <path d="M 130 365 L 205 245 L 245 285 L 360 160" 
+          fill="none" 
+          stroke="url(#neonGlowGrad)" 
+          stroke-width="15" 
+          stroke-linecap="square" 
+          stroke-linejoin="miter" 
+          filter="url(#neonBloom)"/>
+
+    <path d="M 135 365 L 205 250 L 245 290 L 355 165" 
+          fill="none" 
+          stroke="#042F2C" 
+          stroke-width="5" 
+          stroke-linejoin="miter"/>
+
+    <!-- Arrow Head Polygon -->
+    <polygon points="325,182 390,125 385,208 360,195 348,206" 
+             fill="url(#neonMint)" 
+             stroke="#064E3B" 
+             stroke-width="3" 
+             stroke-linejoin="round" 
+             filter="url(#neonBloom)"/>
+             
+    <!-- Head Specular Highlights -->
+    <polygon points="340,175 385,133 380,195 362,186" 
+             fill="#A7F3D0" 
+             opacity="0.9"/>
+  </g>
+
+  <!-- ================= 4. BRAND TITLE (Shifted Slightly Left for Robot) ================= -->
+  <g class="anim-title">
+    <text x="215" y="426" 
+          text-anchor="middle" 
+          fill="#FFFFFF" 
+          font-family="system-ui, -apple-system, sans-serif" 
+          font-size="22" 
+          font-weight="900" 
+          letter-spacing="4">
+      SURGE<tspan fill="#34D399">AI</tspan>
+    </text>
+    <text x="215" y="445" 
+          text-anchor="middle" 
+          fill="#6EE7B7" 
+          font-family="system-ui, -apple-system, sans-serif" 
+          font-size="8.5" 
+          font-weight="600" 
+          letter-spacing="2.5" 
+          opacity="0.85">
+      AUTONOMOUS BUDGET AGENT
+    </text>
+  </g>
+
+  <!-- ================= 5. CUTE 3D AI ROBOT NEXT TO SURGEAI ================= -->
+  <g class="anim-robot">
+    <!-- Drop Shadow on Floor -->
+    <ellipse cx="10" cy="38" rx="20" ry="5" fill="#000000" opacity="0.5"/>
+
+    <!-- Left Resting Arm -->
+    <rect x="-14" y="10" width="7" height="15" rx="3.5" fill="url(#robotWhite)"/>
+
+    <!-- Robot Capsule Body -->
+    <rect x="-8" y="3" width="36" height="34" rx="16" fill="url(#robotWhite)" stroke="#64748B" stroke-width="0.8"/>
+    
+    <!-- Chest Glow Core -->
+    <circle cx="10" cy="20" r="5" fill="#042F2C" stroke="#34D399" stroke-width="1.2"/>
+    <circle cx="10" cy="20" r="2.5" fill="#34D399" filter="url(#neonBloom)"/>
+
+    <!-- Head Antenna -->
+    <line x1="10" y1="-8" x2="10" y2="-1" stroke="#94A3B8" stroke-width="2" stroke-linecap="round"/>
+    <circle cx="10" cy="-10" r="3.2" fill="#34D399" filter="url(#neonBloom)"/>
+
+    <!-- 3D Head Sphere -->
+    <ellipse cx="10" cy="6" rx="20" ry="17" fill="url(#robotWhite)" stroke="#94A3B8" stroke-width="0.8"/>
+    
+    <!-- Glossy Curved Glass Visor Screen -->
+    <rect x="-3" y="-1" width="26" height="15" rx="7.5" fill="url(#robotVisor)" stroke="#10B981" stroke-width="1"/>
+    
+    <!-- Cheerful Glowing Mint Eyes (Happy Arc Curves ^ ^) -->
+    <path d="M 2 7 Q 5 2 8 7" fill="none" stroke="#34D399" stroke-width="2.2" stroke-linecap="round" filter="url(#neonBloom)"/>
+    <path d="M 12 7 Q 15 2 18 7" fill="none" stroke="#34D399" stroke-width="2.2" stroke-linecap="round" filter="url(#neonBloom)"/>
+  </g>
+
+  <!-- Robot Animated Waving Right Arm (Separate Group for Accurate Transform Origin) -->
+  <g class="anim-wave-arm">
+    <g transform="translate(320, 405)">
+      <!-- Upper Arm & Hand -->
+      <rect x="25" y="5" width="8" height="20" rx="4" fill="url(#robotWhite)" stroke="#64748B" stroke-width="0.6"/>
+      <circle cx="29" cy="5" r="4.5" fill="#34D399" filter="url(#neonBloom)"/>
+    </g>
+  </g>
+
+  <!-- ================= 6. "HI!" NEON SPEECH BADGE ================= -->
+  <g class="anim-bubble">
+    <!-- Glossy Rounded Chat Tag -->
+    <rect x="-2" y="-18" width="34" height="18" rx="8" fill="#042F2C" stroke="#34D399" stroke-width="1.5" filter="url(#neonBloom)"/>
+    <!-- Speech Pin Pointer -->
+    <polygon points="6,0 12,0 8,5" fill="#042F2C"/>
+    
+    <!-- Text "Hii!" -->
+    <text x="15" y="-6" 
+          text-anchor="middle" 
+          fill="#6EE7B7" 
+          font-family="system-ui, -apple-system, sans-serif" 
+          font-size="10" 
+          font-weight="900" 
+          letter-spacing="1">
+      HI!
+    </text>
+  </g>
+</svg>

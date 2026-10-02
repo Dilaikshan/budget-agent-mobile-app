@@ -6,7 +6,7 @@ Status: implemented and running, 2026-10-02. This document describes how the **b
 
 ## 1. What the system is
 
-Budget Agent is a personal finance app for one owner. You record income, expenses and transfers in seconds — by typing a sentence (`lunch kfc 2500 cash`) or by picking a category — and the app keeps an exact ledger of every account. AI helps fill in details, but **nothing is ever saved without you confirming the exact values**.
+Budget Agent — shipped to users as **Surge Budget** ("Your AI money agent") — is a personal finance app for one owner. You record income, expenses and transfers in seconds — by typing a sentence (`lunch kfc 2500 cash`) or by picking a category — and the app keeps an exact ledger of every account. AI helps fill in details, but **nothing is ever saved without you confirming the exact values**.
 
 Three principles shape everything:
 
@@ -168,6 +168,9 @@ The model never sees account names or your full ledger, and it cannot save anyth
 The job never changes a confirmed transaction or balance.
 
 ## 5. Screens
+
+On launch a native launch screen shows the Surge Budget mark, then a ~3.6 s animated intro: the coin pops in, a light sweep surges up the arrow, the robot mascot lands on the arrowhead, waves and says "Hi!", and the wordmark rises in (skipped when the system "remove animations" setting is on). Home's balance counts up and its cards slide in.
+
 
 | Area | What you can do |
 |---|---|

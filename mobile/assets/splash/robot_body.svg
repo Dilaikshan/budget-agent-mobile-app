@@ -1,0 +1,55 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 140" width="100" height="140">
+  <!-- Surge Budget mascot (body, without the waving arm). Pseudo-3D via gradients. -->
+  <defs>
+    <linearGradient id="rb_metal" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#FFFFFF"/>
+      <stop offset="0.45" stop-color="#D7E0EA"/>
+      <stop offset="1" stop-color="#8A99AD"/>
+    </linearGradient>
+    <linearGradient id="rb_metalDark" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#C5D0DC"/>
+      <stop offset="1" stop-color="#6B7A90"/>
+    </linearGradient>
+    <radialGradient id="rb_glow" cx="50%" cy="45%" r="55%">
+      <stop offset="0" stop-color="#ECFDF5"/>
+      <stop offset="0.5" stop-color="#6EE7B7"/>
+      <stop offset="1" stop-color="#10B981"/>
+    </radialGradient>
+    <linearGradient id="rb_visor" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#1E293B"/>
+      <stop offset="1" stop-color="#020617"/>
+    </linearGradient>
+  </defs>
+  <!-- antenna -->
+  <line x1="50" y1="9" x2="50" y2="22" stroke="url(#rb_metalDark)" stroke-width="4" stroke-linecap="round"/>
+  <circle cx="50" cy="7" r="6" fill="url(#rb_glow)"/>
+  <circle cx="48" cy="5" r="2" fill="#FFFFFF" fill-opacity="0.9"/>
+  <!-- ears -->
+  <circle cx="17" cy="43" r="6" fill="url(#rb_metalDark)"/>
+  <circle cx="83" cy="43" r="6" fill="url(#rb_metalDark)"/>
+  <!-- head -->
+  <rect x="18" y="20" width="64" height="46" rx="20" fill="url(#rb_metal)"/>
+  <ellipse cx="34" cy="28" rx="12" ry="5" fill="#FFFFFF" fill-opacity="0.7"/>
+  <!-- visor + eyes + smile -->
+  <rect x="25" y="32" width="50" height="25" rx="12.5" fill="url(#rb_visor)"/>
+  <ellipse cx="40" cy="43" rx="5.5" ry="6.5" fill="url(#rb_glow)"/>
+  <ellipse cx="60" cy="43" rx="5.5" ry="6.5" fill="url(#rb_glow)"/>
+  <circle cx="38.5" cy="41" r="1.6" fill="#FFFFFF"/>
+  <circle cx="58.5" cy="41" r="1.6" fill="#FFFFFF"/>
+  <path d="M44 51 Q50 55 56 51" fill="none" stroke="#6EE7B7" stroke-width="2.2" stroke-linecap="round"/>
+  <!-- neck -->
+  <rect x="43" y="64" width="14" height="7" rx="3" fill="url(#rb_metalDark)"/>
+  <!-- left arm: hand on hip (style pose) -->
+  <path d="M31 77 Q13 88 25 104" fill="none" stroke="url(#rb_metalDark)" stroke-width="10" stroke-linecap="round"/>
+  <circle cx="26" cy="104" r="6" fill="url(#rb_metal)"/>
+  <!-- torso -->
+  <rect x="27" y="69" width="46" height="42" rx="15" fill="url(#rb_metal)"/>
+  <ellipse cx="40" cy="76" rx="9" ry="4" fill="#FFFFFF" fill-opacity="0.6"/>
+  <circle cx="50" cy="89" r="8" fill="#0B1220"/>
+  <circle cx="50" cy="89" r="5.5" fill="url(#rb_glow)"/>
+  <!-- legs: wide confident stance -->
+  <rect x="33" y="107" width="11" height="22" rx="5" fill="url(#rb_metalDark)" transform="rotate(8 38 107)"/>
+  <rect x="56" y="107" width="11" height="22" rx="5" fill="url(#rb_metalDark)" transform="rotate(-8 62 107)"/>
+  <ellipse cx="35" cy="133" rx="11" ry="6" fill="url(#rb_metal)"/>
+  <ellipse cx="65" cy="133" rx="11" ry="6" fill="url(#rb_metal)"/>
+</svg>

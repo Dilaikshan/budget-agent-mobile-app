@@ -7,7 +7,7 @@ const kPrivacyPolicyVersion = 'pp-2026-09';
 const kAiDisclosure =
     'When AI is on, the text you type in quick entry and minimal, sanitized details '
     '(account aliases like "A1", category names and merchant words) are sent to the '
-    'Budget Agent server, which may forward them to Google Gemini and, if you allow '
+    'Surge Budget server, which may forward them to Google Gemini and, if you allow '
     'fallback, to an approved OpenRouter provider. Account names, numbers, emails and '
     'links are removed first. AI only suggests; you confirm every change. You can turn '
     'AI, fallback, daily review and learning off at any time; manual entry always works.';

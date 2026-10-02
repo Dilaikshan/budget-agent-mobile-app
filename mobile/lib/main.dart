@@ -8,6 +8,8 @@ import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import 'app/animated_splash.dart';
+import 'app/brand.dart';
 import 'app/providers.dart';
 import 'app/router.dart';
 import 'app/theme.dart';
@@ -121,19 +123,21 @@ class _BudgetAgentAppState extends ConsumerState<BudgetAgentApp>
         : ref.watch(settingsProvider).value?.theme;
     final env = ref.watch(appConfigProvider).env;
     return MaterialApp.router(
-      title: 'Budget Agent',
+      title: Brand.name,
       debugShowCheckedModeBanner: false,
       theme: AppTheme.light(),
       darkTheme: AppTheme.dark(),
       themeMode: AppTheme.modeOf(theme),
       routerConfig: ref.watch(routerProvider),
-      builder: (context, child) => env == AppEnv.production
-          ? child!
-          : Banner(
-              message: env.name.toUpperCase(),
-              location: BannerLocation.topEnd,
-              child: child!,
-            ),
+      builder: (context, child) => SplashOverlay(
+        child: env == AppEnv.production
+            ? child!
+            : Banner(
+                message: env.name.toUpperCase(),
+                location: BannerLocation.topEnd,
+                child: child!,
+              ),
+      ),
     );
   }
 }

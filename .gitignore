@@ -35,3 +35,6 @@ mobile/env/*.json
 .idea/
 .vscode/
 *.swp
+
+# Graphify local cache (graph.json/html/report are committed)
+graphify-out/cache/

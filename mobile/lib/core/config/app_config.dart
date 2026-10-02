@@ -36,6 +36,12 @@ class AppConfig {
     'GOOGLE_SERVER_CLIENT_ID',
   );
   static const _appCheckDebug = bool.fromEnvironment('APP_CHECK_DEBUG');
+
+  /// Temporary, explicit opt-in for sideloaded (non-Play) release testing:
+  /// Play Integrity only attests Play-installed apps. Remove before public release.
+  static const _allowDebugInRelease = bool.fromEnvironment(
+    'ALLOW_DEBUG_APP_CHECK_IN_RELEASE',
+  );
   static const _isRelease = bool.fromEnvironment('dart.vm.product');
 
   /// Validates build defines; returns the list of problems instead of throwing.
@@ -61,7 +67,9 @@ class AppConfig {
     ]) {
       if (value.isEmpty) problems.add('$name is missing');
     }
-    if (_appCheckDebug && (env == AppEnv.production || _isRelease)) {
+    if (_appCheckDebug &&
+        (env == AppEnv.production || _isRelease) &&
+        !_allowDebugInRelease) {
       problems.add(
         'APP_CHECK_DEBUG is not allowed in production/release builds',
       );

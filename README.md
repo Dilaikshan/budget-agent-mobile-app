@@ -60,5 +60,9 @@ Operator setup (Firebase project, secrets, owner UID, App Check, model keys) is 
 | [12 Deployment](docs/12-DEPLOYMENT.md) | Environments, quotas and release checklist |
 | [13 Decisions](docs/13-DECISIONS.md) | ADRs, source reconciliation and risks |
 | [14 Roadmap](docs/14-FUTURE-ROADMAP.md) | Deferred capabilities and adoption gates |
+| [System documentation](docs/SYSTEM-DOCUMENTATION.md) | How the implemented system works end to end |
+| [Technical documentation](docs/TECHNICAL-DOCUMENTATION.md) | Module-level reference for the implemented code |
+
+Code knowledge graph: `graphify-out/graph.html` and `graphify-out/GRAPH_REPORT.md` (regenerate with `graphify update .`).
 
 For disagreements, consult the document that owns the contract and record a decision before changing it. Product principles in AGENTS.md remain non-negotiable.
